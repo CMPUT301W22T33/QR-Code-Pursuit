@@ -28,9 +28,12 @@ public class MainActivity extends AppCompatActivity {
                 Fragment frag = null;
 
                 switch (item.getItemId()) {
+
                     case R.id.bottomnavigation_menu_scan:
                         frag = new ScanFragment();
                         break;
+
+                    // more fragments go here
                 }
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, frag).commit();

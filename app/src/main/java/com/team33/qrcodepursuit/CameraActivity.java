@@ -98,6 +98,8 @@ public class CameraActivity extends AppCompatActivity {
                     public void run() {
                         String rawData = new String(result.getRawBytes(), StandardCharsets.UTF_8);
                         Toast.makeText(CameraActivity.this, rawData, Toast.LENGTH_SHORT).show();
+                        // later, in order to process QRs, just very very quickly open() and get photo
+                        // stuff the photo and result into some QR class and send it to the next activity
                     }
                 });
             }
