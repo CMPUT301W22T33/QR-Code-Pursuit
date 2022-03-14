@@ -4,20 +4,40 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.team33.qrcodepursuit.activities.Login.LoginActivity;
 
+/**
+ * main activity, hosts current fragment and persistent menu bar
+ */
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView menu;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
+    /**
+     * on creation, set up menu bar and initial fragment
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // get user
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        // if not logged in, goto LoginActivity
+        if (user == null)
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
         menu = findViewById(R.id.bottomnavigation);
 
@@ -34,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.bottomnavigation_menu_scoreboard:
                         frag = new ScoreBoardFragment();
                         break;
+
+                    case R.id.bottomnavigation_menu_scan:
+                        frag = new ScanFragment();
+                        break;
+
+                    // more fragments go here
                 }
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, frag).commit();
@@ -44,5 +70,4 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container, new ScanFragment()).commit();
     }
-
 }
