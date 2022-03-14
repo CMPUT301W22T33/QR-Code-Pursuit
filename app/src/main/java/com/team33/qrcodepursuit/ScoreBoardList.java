@@ -15,12 +15,12 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class scoreBoardList extends ArrayAdapter<Player> {
+public class ScoreBoardList extends ArrayAdapter<Player> {
 
     private ArrayList<Player> players;
     private Context context;
 
-    public scoreBoardList(Context context, ArrayList<Player> players){
+    public ScoreBoardList(Context context, ArrayList<Player> players){
         super(context,0, players);
         this.players = players;
         this.context = context;
@@ -34,7 +34,7 @@ public class scoreBoardList extends ArrayAdapter<Player> {
         View view = convertView;
 
         if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.content, parent,false); //content is a mystery for tomorrow
+            view = LayoutInflater.from(context).inflate(R.layout.activity_main, parent,false); //content is a mystery for tomorrow
         }
 
         Player player = players.get(position);

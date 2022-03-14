@@ -3,24 +3,23 @@ package com.team33.qrcodepursuit;
 
 //THIS IS JUST A PLACEHOLDER
 public class Player {
-    private String name;
+    private String username;
+    private String bio;
     private String region;
-    private Integer score;
 
-    Player(String city, String province, Integer score){
-        this.name = city;
-        this.region = province;
-        this.score =  score;
+    Player(String username, String bio, String region){
+        this.username = username;
+        this.bio = bio;
+        this.region = region;
     }
 
-    String getPlayerName(){
-        return this.name;
+    String getUsername(){
+        return this.username;
     }
-
+    String getBio(){
+        return this.bio;
+    }
     String getRegion(){
         return this.region;
-    }
-    Integer getScore(){
-        return this.score;
     }
 }
