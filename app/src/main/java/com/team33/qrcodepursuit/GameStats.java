@@ -36,7 +36,9 @@ public class GameStats extends GameHistory {
     int totalQRCodes = 0;
     String associatedUsername;
     int highestQRAttained;
-    //int currentRanking;
+    int lowestQRAttained;
+    int currentRanking;
+
 
     //GameQRCode currentLowest;
     //GameQRCode currentHighest;
@@ -156,5 +158,14 @@ public class GameStats extends GameHistory {
      */
     public void setTotalQRCodes(int totalQRCodes){
         this.totalQRCodes = totalQRCodes;
+    }
+    public int getLowestQRAttained(){
+        return this.lowestQRAttained;
+    }
+    public int getHighestQRAttained(){
+        return this.highestQRAttained;
+    }
+    public int getTotalQRCodes(){
+        return this.totalQRCodes;
     }
 }
