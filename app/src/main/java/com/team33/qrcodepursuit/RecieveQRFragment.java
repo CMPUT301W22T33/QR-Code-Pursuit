@@ -2,10 +2,13 @@ package com.team33.qrcodepursuit;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,15 +58,15 @@ public class RecieveQRFragment extends Fragment {
         Bundle b = getArguments();
         qr = (GameQRCode) b.getParcelable(ScanFragment.QRKEY);
 
-        getActivity().getSupportFragmentManager().setFragmentResultListener("takeImage", getActivity(), new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(String requestKey, Bundle bundle) {
-                Bitmap bitm = bundle.getParcelable("newImage");
-                qr.setImage(bitm);
-                System.out.println(qr.getImage());
-                System.out.println("why god");
-            }
-        });
+//        getActivity().getSupportFragmentManager().setFragmentResultListener("takeImage", getActivity(), new FragmentResultListener() {
+//            @Override
+//            public void onFragmentResult(String requestKey, Bundle bundle) {
+//                Bitmap bitm = bundle.getParcelable("newImage");
+//                qr.setImage(bitm);
+//                System.out.println(qr.getImage());
+//                System.out.println("why god");
+//            }
+//        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
@@ -78,12 +81,18 @@ public class RecieveQRFragment extends Fragment {
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment newFrag = new CameraFragment();
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, newFrag, "scannedFrag")
-                        .addToBackStack("qrResult").commit();
-                if (qr.getImage() != null) {
-                    addPhotoButton.setText("Retake photo");
+//                Fragment newFrag = new CameraFragment();
+//                getActivity().getSupportFragmentManager().beginTransaction()
+//                        .replace(R.id.container, newFrag, "scannedFrag")
+//                        .addToBackStack("qrResult").commit();
+//                if (qr.getImage() != null) {
+//                    addPhotoButton.setText("Retake photo");
+//                }
+                Intent imageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                try {
+                    startActivityForResult(imageIntent, 1);
+                } catch (ActivityNotFoundException e) {
+                    // cant find cam app
                 }
             }
         });
@@ -111,6 +120,18 @@ public class RecieveQRFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == -1) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            qr.setImage(imageBitmap);
+            if (qr.getImage() != null) {
+                addPhotoButton.setText("Retake photo");
+            }
+        }
     }
 
     /* tries to add location to the qr code
