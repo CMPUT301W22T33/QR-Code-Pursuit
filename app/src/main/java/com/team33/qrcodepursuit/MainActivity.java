@@ -14,12 +14,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.team33.qrcodepursuit.activities.Login.LoginActivity;
 
+/**
+ * main activity, hosts current fragment and persistent menu bar
+ */
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView menu;
     private FirebaseAuth auth;
     private FirebaseUser user;
 
+    /**
+     * on creation, set up menu bar and initial fragment
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,9 +48,12 @@ public class MainActivity extends AppCompatActivity {
                 Fragment frag = null;
 
                 switch (item.getItemId()) {
+
                     case R.id.bottomnavigation_menu_scan:
                         frag = new ScanFragment();
                         break;
+
+                    // more fragments go here
                 }
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, frag).commit();
