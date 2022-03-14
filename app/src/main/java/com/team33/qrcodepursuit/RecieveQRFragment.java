@@ -3,6 +3,7 @@ package com.team33.qrcodepursuit;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -52,6 +54,14 @@ public class RecieveQRFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
         Bundle b = getArguments();
         qr = (GameQRCode) b.getParcelable(ScanFragment.QRKEY);
+
+        getActivity().getSupportFragmentManager().setFragmentResultListener("takeImage", getActivity(), new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(String requestKey, Bundle bundle) {
+                Bitmap bitm = bundle.getParcelable("newImage");
+                qr.setImage(bitm);
+            }
+        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 

@@ -49,7 +49,7 @@ public class GameQRCode implements Parcelable {
         }
     };
 
-    public void addImage(Bitmap source) {
+    public void setImage(Bitmap source) {
         image = source;
     }
 
