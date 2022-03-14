@@ -16,6 +16,7 @@ public class GameQRCodeTest {
 
     @Before
     public void createQR() {
-
+        //code = new GameQRCode()
+        // make some test qr codes
     }
 }
