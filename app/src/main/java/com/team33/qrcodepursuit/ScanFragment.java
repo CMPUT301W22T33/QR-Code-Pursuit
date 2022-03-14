@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// also, perhaps make this multipurpose (use for login), and the qrreader dependency isn't needed anymore
+
 package com.team33.qrcodepursuit;
 
 import android.Manifest;
@@ -50,6 +52,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScanFragment extends Fragment {
+
+    public static String QRKEY = "com.team33.qrcodepursuit.NEWQR";
 
     private CodeScanner qrScanner;
 
@@ -85,8 +89,14 @@ public class ScanFragment extends Fragment {
             @Override
             public void onDecoded(@NonNull Result result) {
                 // generate qr object and kick to another frag
-                System.out.println(result.getText());
-                System.out.println(result.getRawBytes());
+                Bundle args = new Bundle();
+                GameQRCode newQR = new GameQRCode(result);
+                args.putParcelable(QRKEY, newQR);
+                RecieveQRFragment newFrag = new RecieveQRFragment();
+                newFrag.setArguments(args);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, newFrag, "scannedFrag")
+                        .commit();
             }
         });
 
