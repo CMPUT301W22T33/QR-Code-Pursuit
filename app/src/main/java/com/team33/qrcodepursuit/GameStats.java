@@ -38,6 +38,33 @@ public class GameStats extends GameHistory {
     GameQRCode currentLowest;
     GameQRCode currentHighest;
 
+    public GameStats(String username){
+        DocumentReference doc = database.collection("Accounts").document(username);
+
+        doc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Log.d(TAG,"username is" + document.get("username"));
+                        String username = (String) document.get("username");
+                        Log.d(TAG,"totalScore is" + document.get("totalScore"));
+                        int totalScore = (int) document.get("totalScore");
+                        Log.d(TAG,"highestQR is" + document.get("highestQR"));
+                        int highestQRAttained = (int) document.get("highestQR");
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+
+            }
+        });
+    }
+
     public void setInitialPointsFromData(){
         if (totalPoints != 0)
             GameQRProcessor processor = new GameQRProcessor();
