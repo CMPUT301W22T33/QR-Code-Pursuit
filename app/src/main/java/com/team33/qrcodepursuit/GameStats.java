@@ -27,6 +27,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.List;
+
 public class GameStats extends GameHistory {
     private static final String TAG = "Test";
     FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -34,6 +36,7 @@ public class GameStats extends GameHistory {
     int totalQRCodes = 0;
     String associatedUsername;
     int highestQRAttained;
+    //int currentRanking;
 
     GameQRCode currentLowest;
     GameQRCode currentHighest;
@@ -43,6 +46,7 @@ public class GameStats extends GameHistory {
      * @param username - The associated username
      */
     public GameStats(String username){
+        super();
         DocumentReference doc = database.collection("Accounts").document(username);
 
         doc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -53,11 +57,11 @@ public class GameStats extends GameHistory {
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Log.d(TAG,"username is" + document.get("username"));
-                        String username = (String) document.get("username");
+                        associatedUsername = (String) document.get("username");
                         Log.d(TAG,"totalScore is" + document.get("totalScore"));
-                        int totalScore = (int) document.get("totalScore");
+                        totalScore = (int) document.get("totalScore");
                         Log.d(TAG,"highestQR is" + document.get("highestQR"));
-                        int highestQRAttained = (int) document.get("highestQR");
+                        highestQRAttained = (int) document.get("highestQR");
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -76,13 +80,13 @@ public class GameStats extends GameHistory {
     public void setInitialScoreFromData(){
         if (totalScore != 0)
             GameQRProcessor processor = new GameQRProcessor();
-        List<String> codes = super.codeHistory;
+        List<String> codes = super.qrCodeHashes;
         int points = 0;
         for(int i = 0; i < codes.size(); i++){
             int value = processor.calculateScore(codes[i]);
             points += value;
         }
-        setTotalPoints(points);
+        setTotalScore(points);
     }
 
     /**
@@ -119,7 +123,7 @@ public class GameStats extends GameHistory {
     }
 
     /**
-     * Get the lowest value QR code collected from this associated user.
+     * Get the QR code of the lowest value collected from this associated user.
      * @return lowest value QR code
      */
     public GameQRCode getLowestQRCode(){
@@ -127,7 +131,7 @@ public class GameStats extends GameHistory {
     }
 
     /**
-     * Get the lowest value QR code from this associated user.
+     * Get the QR code of the lowest value from this associated user.
      * @return highest value QR code
      */
     public GameQRCode getHighestQRCode(){
