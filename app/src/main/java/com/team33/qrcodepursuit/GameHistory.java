@@ -10,9 +10,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Document;
-
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,7 +21,7 @@ import java.util.List;
  */
 public class GameHistory {
     List<String> qrCodeHashes;
-    List<GameQRCode> codeHistory;
+    //List<GameQRCode> codeHistory;
 
     GameStats stats;
     String associatedUsername;
@@ -42,43 +39,42 @@ public class GameHistory {
     /**
      * Force sync of local contents with remote copy.
      */
-    private void forceSyncWithServer(){
-        DocumentReference docRef = db.collection("Accounts").document(associatedUsername);
-        List<String> qrCodeNames;
-        qrCodeNames = new List<String>;
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot document = task.getResult();
-                Log.d("Confirm", "Data is " + document.getData());
-                qrCodeNames = (List<String>) document.getData();
-            }
-        });
-
-        for(int i = 0; i < qrCodeNames.size(); i++)
-        {
-            docRef = db.collection("GameQRs").document(qrCodeNames.get(i));
-
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    DocumentSnapshot document = task.getResult();
-                    Log.d("Confirm", "Game QR code hash is" + document.getString("hash"));
-                    qrCodeHashes.add(document.getString("hash"));
-                }
-            });
-        }
-
-        //some other method to make the necessary QR classes and to replace the codeHistory contents
-    }
+//    private void forceSyncWithServer(){
+//        DocumentReference docRef = db.collection("Accounts").document(associatedUsername);
+//        List<String> qrCodeNames = new List<String>();
+//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                DocumentSnapshot document = task.getResult();
+//                Log.d("Confirm", "Data is " + document.getData());
+//                qrCodeNames = (List<String>) document.getData();
+//            }
+//        });
+//
+//        for(int i = 0; i < qrCodeNames.size(); i++)
+//        {
+//            docRef = db.collection("GameQRs").document(qrCodeNames.get(i));
+//
+//            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                    DocumentSnapshot document = task.getResult();
+//                    Log.d("Confirm", "Game QR code hash is" + document.getString("hash"));
+//                    qrCodeHashes.add(document.getString("hash"));
+//                }
+//            });
+//        }
+//
+//        //some other method to make the necessary QR classes and to replace the codeHistory contents
+//    }
 
     /**
      * Add a QR code to the QR codes collected, both remotely and locally.
      * @param gameQRCode
      */
-    public void addCode(GameQRCode gameQRCode){
-        codeHistory.add(gameQRCode);
-    }
+    //public void addCode(GameQRCode gameQRCode){
+        //codeHistory.add(gameQRCode);
+    //}
 
     /**
      * Get the GameStats class associated with this GameHistory
@@ -108,7 +104,7 @@ public class GameHistory {
      * Get the array of QR codes collected by this user.
      * @return codeHistory - an ArrayList of QR code data
      */
-    public ArrayList<GameQRCode> getCodeHistory(){
-        return this.codeHistory;
-    }
+    //public ArrayList<GameQRCode> getCodeHistory(){
+        //return this.codeHistory;
+    //}
 }

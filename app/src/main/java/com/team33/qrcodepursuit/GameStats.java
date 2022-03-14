@@ -38,8 +38,8 @@ public class GameStats extends GameHistory {
     int highestQRAttained;
     //int currentRanking;
 
-    GameQRCode currentLowest;
-    GameQRCode currentHighest;
+    //GameQRCode currentLowest;
+    //GameQRCode currentHighest;
 
     /**
      * Generate a GameStats class that stores the statistics for a specific GameHistory
@@ -79,11 +79,12 @@ public class GameStats extends GameHistory {
      */
     public void setInitialScoreFromData(){
         if (totalScore != 0)
-            GameQRProcessor processor = new GameQRProcessor();
+            //GameQRProcessor processor = new GameQRProcessor();
+            ;
         List<String> codes = super.qrCodeHashes;
         int points = 0;
         for(int i = 0; i < codes.size(); i++){
-            int value = processor.calculateScore(codes[i]);
+            //int value = processor.calculateScore(codes[i]);
             points += value;
         }
         setTotalScore(points);
