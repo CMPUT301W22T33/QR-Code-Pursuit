@@ -21,10 +21,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CameraActivity"
-            android:exported="true" >
-        </activity>
-        <activity
             android:name=".activities.Login.LoginActivity"
             android:exported="false">
         </activity>
