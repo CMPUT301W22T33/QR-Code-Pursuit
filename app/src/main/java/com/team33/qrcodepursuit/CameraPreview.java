@@ -25,8 +25,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder hold) {
         try {
-            camera.setDisplayOrientation(90);
             camera.setPreviewDisplay(hold);
+            camera.setDisplayOrientation(90);
             camera.startPreview();
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,8 +51,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         // start preview
         try {
-            camera.setDisplayOrientation(90);
             camera.setPreviewDisplay(holder);
+            camera.setDisplayOrientation(90);
             camera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();

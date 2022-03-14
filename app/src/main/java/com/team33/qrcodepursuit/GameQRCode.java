@@ -28,6 +28,7 @@ public class GameQRCode implements Parcelable {
         qrText = code.getText();
         comments = new ArrayList<String>();
         location = null;
+        image = null;
     }
 
     protected GameQRCode(Parcel in) {

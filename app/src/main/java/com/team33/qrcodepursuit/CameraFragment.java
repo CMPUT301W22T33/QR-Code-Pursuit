@@ -3,9 +3,12 @@
 
 package com.team33.qrcodepursuit;
 
+import static java.lang.Thread.sleep;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Picture;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,6 +25,7 @@ public class CameraFragment extends Fragment {
     private CameraPreview preview;
     private FrameLayout previewLayout;
     private Button captureButton;
+
 
     public CameraFragment() {
         super(R.layout.fragment_camera);
@@ -44,15 +48,24 @@ public class CameraFragment extends Fragment {
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 final Bitmap[] bitm = new Bitmap[1]; // ultra weird
-                camera.takePicture(null, null, new Camera.PictureCallback() {
+                Camera.PictureCallback pic = new Camera.PictureCallback() {
                     @Override
-                    public void onPictureTaken(byte[] data, Camera cam) {
-                        bitm[0] = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    public void onPictureTaken(byte[] bytes, Camera camera) {
+                        bitm[0] = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        System.out.println(bitm[0]); // if i don't do this, bitm becomes null for whatever reason
                     }
-                });
+                };
+                camera.takePicture(null, null, pic);
+                System.out.println(bitm[0]);
+                try {
+                    sleep(1000); // extremely cursed
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 bundle.putParcelable("newImage", bitm[0]);
                 getActivity().getSupportFragmentManager().setFragmentResult("takeImage", bundle);
-                getActivity().getSupportFragmentManager().popBackStackImmediate();
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
 
@@ -68,13 +81,13 @@ public class CameraFragment extends Fragment {
     @Override
     public void onPause() {
         camera.release();
-        previewLayout.removeView(preview);
         super.onPause();
     }
 
     private void startPreview() {
         camera = Camera.open();
 
+        previewLayout.removeView(preview);
         preview = new CameraPreview(getActivity(), camera);
 
         previewLayout.addView(preview);

@@ -60,6 +60,8 @@ public class RecieveQRFragment extends Fragment {
             public void onFragmentResult(String requestKey, Bundle bundle) {
                 Bitmap bitm = bundle.getParcelable("newImage");
                 qr.setImage(bitm);
+                System.out.println(qr.getImage());
+                System.out.println("why god");
             }
         });
 
@@ -80,6 +82,9 @@ public class RecieveQRFragment extends Fragment {
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, newFrag, "scannedFrag")
                         .addToBackStack("qrResult").commit();
+                if (qr.getImage() != null) {
+                    addPhotoButton.setText("Retake photo");
+                }
             }
         });
 
@@ -87,9 +92,6 @@ public class RecieveQRFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 addLocation();
-                if (qr.getLocation() != null) {
-                    addLocationButton.setEnabled(false);
-                }
             }
         });
 
@@ -121,10 +123,14 @@ public class RecieveQRFragment extends Fragment {
                         public void onSuccess(Location location) {
                             if (location != null) {
                                 qr.setLocation(location);
+                                addLocationButton.setEnabled(false);
                             }
                         }
                     });
-        } else { // extra step should be here but meh
+        } else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            addLocationButton.setEnabled(false);
+        }
+        else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
             addLocation();
         }
