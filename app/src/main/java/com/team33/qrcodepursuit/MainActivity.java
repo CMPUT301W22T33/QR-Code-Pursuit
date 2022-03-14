@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.bottomnavigation_menu_home:
                         frag = new ScanFragment();
                         break;
-                    case R.id.bottomnavigation_menu_scoreboard:
+                    case R.id.bottomnavigation_menu_scan:
                         frag = new ScoreBoardFragment();
                         break;
                 }
