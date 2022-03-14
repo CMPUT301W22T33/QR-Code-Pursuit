@@ -1,4 +1,4 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.activities.Home;
 
 import android.Manifest;
 import android.app.Activity;
@@ -20,11 +20,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.team33.qrcodepursuit.R;
+import com.team33.qrcodepursuit.models.GameQRCode;
 
 /**
  * handle adding identifying photo and location to GameQRCode

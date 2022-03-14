@@ -1,4 +1,4 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.activities.Scoreboard;
 
 import android.os.Bundle;
 
@@ -18,6 +18,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.team33.qrcodepursuit.R;
+import com.team33.qrcodepursuit.models.Player;
 
 import java.util.ArrayList;
 import java.util.Map;

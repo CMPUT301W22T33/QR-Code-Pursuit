@@ -1,4 +1,4 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.models;
 
 import android.graphics.Bitmap;
 import android.location.Location;

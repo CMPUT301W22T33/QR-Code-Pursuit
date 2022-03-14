@@ -1,18 +1,18 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.team33.qrcodepursuit.R;
+import com.team33.qrcodepursuit.activities.Home.ScanFragment;
 import com.team33.qrcodepursuit.activities.Login.LoginActivity;
+import com.team33.qrcodepursuit.activities.Scoreboard.ScoreBoardFragment;
 
 /**
  * main activity, hosts current fragment and persistent menu bar

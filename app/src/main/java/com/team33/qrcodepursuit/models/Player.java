@@ -1,4 +1,4 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.models;
 
 
 //THIS IS JUST A PLACEHOLDER
@@ -7,19 +7,19 @@ public class Player {
     private String bio;
     private String region;
 
-    Player(String username, String bio, String region){
+    public Player(String username, String bio, String region){
         this.username = username;
         this.bio = bio;
         this.region = region;
     }
 
-    String getUsername(){
+    public String getUsername(){
         return this.username;
     }
-    String getBio(){
+    public String getBio(){
         return this.bio;
     }
-    String getRegion(){
+    public String getRegion(){
         return this.region;
     }
 }
