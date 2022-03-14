@@ -39,34 +39,38 @@ public class MainActivity extends AppCompatActivity {
         if (user == null)
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
+        // switch between fragments with bottom navigation menu
         menu = findViewById(R.id.bottomnavigation);
-
-        menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                Fragment frag = null;
-
-                switch (item.getItemId()) {
-                    case R.id.bottomnavigation_menu_home:
-                        frag = new ScanFragment();
-                        break;
-                    case R.id.bottomnavigation_menu_scoreboard:
-                        frag = new ScoreBoardFragment();
-                        break;
-                    case R.id.bottomnavigation_menu_scan:
-                        frag = new ScanFragment();
-                        break;
-
-                    // more fragments go here
-                }
-
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, frag).commit();
-
-                return false;
+        menu.setOnItemSelectedListener(item -> {
+            Fragment frag;
+            switch (item.getItemId()) {
+                case R.id.bottomnavigation_menu_home:
+                    frag = new ScanFragment();
+                    break;
+                case R.id.bottomnavigation_menu_map:
+                    // todo: move to MapFragment
+                    return false;
+                case R.id.bottomnavigation_menu_scoreboard:
+                    frag = new ScoreBoardFragment();
+                    break;
+                case R.id.bottomnavigation_menu_account:
+                    // todo: move to AccountFragment
+                    return false;
+                default: return false;
             }
+            // switch to fragment
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, frag)
+                    .commit();
+            // todo: update menu to show current item selected
+            return false;
         });
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new ScanFragment()).commit();
+        // start in home fragment by default
+        menu.setSelectedItemId(R.id.bottomnavigation_menu_home);
+        getSupportFragmentManager()
+                .beginTransaction().
+                replace(R.id.container, new ScanFragment())
+                .commit();
     }
 }
