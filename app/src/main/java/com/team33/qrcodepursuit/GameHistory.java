@@ -1,6 +1,19 @@
 package com.team33.qrcodepursuit;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Document;
+
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -10,9 +23,12 @@ import java.util.ArrayList;
  * A remote origin is stored on a Firebase database.
  */
 public class GameHistory {
-    ArrayList<GameQRCode> codeHistory;
+    List<String> qrCodeHashes;
+    List<GameQRCode> codeHistory;
+
     GameStats stats;
     String associatedUsername;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
      * Create a GameHistory with the associated username attached.
@@ -20,6 +36,40 @@ public class GameHistory {
      */
     public GameHistory(String username){
         stats = new GameStats(username);
+
+    }
+
+    /**
+     * Force sync of local contents with remote copy.
+     */
+    private void forceSyncWithServer(){
+        DocumentReference docRef = db.collection("Accounts").document(associatedUsername);
+        List<String> qrCodeNames;
+        qrCodeNames = new List<String>;
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot document = task.getResult();
+                Log.d("Confirm", "Data is " + document.getData());
+                qrCodeNames = (List<String>) document.getData();
+            }
+        });
+
+        for(int i = 0; i < qrCodeNames.size(); i++)
+        {
+            docRef = db.collection("GameQRs").document(qrCodeNames.get(i));
+
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    DocumentSnapshot document = task.getResult();
+                    Log.d("Confirm", "Game QR code hash is" + document.getString("hash"));
+                    qrCodeHashes.add(document.getString("hash"));
+                }
+            });
+        }
+
+        //some other method to make the necessary QR classes and to replace the codeHistory contents
     }
 
     /**

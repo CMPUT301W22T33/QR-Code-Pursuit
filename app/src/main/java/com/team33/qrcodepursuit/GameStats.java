@@ -76,7 +76,7 @@ public class GameStats extends GameHistory {
     public void setInitialScoreFromData(){
         if (totalScore != 0)
             GameQRProcessor processor = new GameQRProcessor();
-        ArrayList<GameQRCode> codes = super.codeHistory;
+        List<String> codes = super.codeHistory;
         int points = 0;
         for(int i = 0; i < codes.size(); i++){
             int value = processor.calculateScore(codes[i]);
