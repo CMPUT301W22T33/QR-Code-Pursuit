@@ -48,7 +48,12 @@ public class MainActivity extends AppCompatActivity {
                 Fragment frag = null;
 
                 switch (item.getItemId()) {
-
+                    case R.id.bottomnavigation_menu_home:
+                        frag = new ScanFragment();
+                        break;
+                    case R.id.bottomnavigation_menu_scoreboard:
+                        frag = new ScoreBoardFragment();
+                        break;
                     case R.id.bottomnavigation_menu_scan:
                         frag = new ScanFragment();
                         break;
