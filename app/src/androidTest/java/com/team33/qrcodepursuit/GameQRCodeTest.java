@@ -2,6 +2,7 @@
 agenda:
 location is settable and gettable
 bitmap is recognizable as a qr code
+score is consistent
 comments are addable and gettable*
 * comments are not currently in halfway spec
  */

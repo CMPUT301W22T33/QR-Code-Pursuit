@@ -10,10 +10,17 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+/**
+ * main activity, hosts current fragment and persistent menu bar
+ */
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView menu;
 
+    /**
+     * on creation, set up menu bar and initial fragment
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

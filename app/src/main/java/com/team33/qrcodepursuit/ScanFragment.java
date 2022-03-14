@@ -46,6 +46,9 @@ import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.zxing.Result;
 
+/**
+ * first fragment, automatically scans for QR code
+ */
 public class ScanFragment extends Fragment {
 
     public static String QRKEY = "com.team33.qrcodepursuit.NEWQR";
@@ -65,6 +68,13 @@ public class ScanFragment extends Fragment {
         super(R.layout.fragment_scan);
     }
 
+    /**
+     * on creation, setup scan result
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -104,12 +114,18 @@ public class ScanFragment extends Fragment {
         return view;
     }
 
+    /**
+     * restart qr scanner
+     */
     @Override
     public void onResume() {
         super.onResume();
         qrScanner.startPreview();
     }
 
+    /**
+     * clean up qr scanner (free the camera)
+     */
     @Override
     public void onPause() {
         qrScanner.releaseResources();

@@ -26,6 +26,9 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+/**
+ * handle adding identifying photo and location to GameQRCode
+ */
 public class RecieveQRFragment extends Fragment {
 
     private Button addPhotoButton;
@@ -51,22 +54,19 @@ public class RecieveQRFragment extends Fragment {
         super(R.layout.fragment_scan);
     }
 
+    /**
+     * on creation, set up all elements defined in layout
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
         Bundle b = getArguments();
         qr = (GameQRCode) b.getParcelable(ScanFragment.QRKEY);
-
-//        getActivity().getSupportFragmentManager().setFragmentResultListener("takeImage", getActivity(), new FragmentResultListener() {
-//            @Override
-//            public void onFragmentResult(String requestKey, Bundle bundle) {
-//                Bitmap bitm = bundle.getParcelable("newImage");
-//                qr.setImage(bitm);
-//                System.out.println(qr.getImage());
-//                System.out.println("why god");
-//            }
-//        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
@@ -81,13 +81,6 @@ public class RecieveQRFragment extends Fragment {
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Fragment newFrag = new CameraFragment();
-//                getActivity().getSupportFragmentManager().beginTransaction()
-//                        .replace(R.id.container, newFrag, "scannedFrag")
-//                        .addToBackStack("qrResult").commit();
-//                if (qr.getImage() != null) {
-//                    addPhotoButton.setText("Retake photo");
-//                }
                 Intent imageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
                     startActivityForResult(imageIntent, 1);
@@ -122,6 +115,12 @@ public class RecieveQRFragment extends Fragment {
         return view;
     }
 
+    /**
+     * retrieve compressed image (bitmap) from camera app
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == -1) {
@@ -134,8 +133,6 @@ public class RecieveQRFragment extends Fragment {
         }
     }
 
-    /* tries to add location to the qr code
-     */
     private void addLocation() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation()
