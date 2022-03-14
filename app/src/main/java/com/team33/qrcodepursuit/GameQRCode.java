@@ -10,12 +10,9 @@ import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.encoder.QRCode;
 
 import net.glxn.qrgen.android.MatrixToImageWriter;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 /* class to store and handle QR data from zxing result

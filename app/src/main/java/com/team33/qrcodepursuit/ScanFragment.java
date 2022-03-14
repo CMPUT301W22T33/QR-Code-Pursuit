@@ -31,7 +31,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -47,9 +45,6 @@ import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.zxing.Result;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ScanFragment extends Fragment {
 

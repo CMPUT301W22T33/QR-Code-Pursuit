@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +20,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import java.util.concurrent.Executor;
 
 public class RecieveQRFragment extends Fragment {
 
@@ -69,7 +66,10 @@ public class RecieveQRFragment extends Fragment {
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // implement camera fragment later
+                Fragment newFrag = new CameraFragment();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, newFrag, "scannedFrag")
+                        .addToBackStack("qrResult").commit();
             }
         });
 
@@ -77,20 +77,24 @@ public class RecieveQRFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 addLocation();
+                if (qr.getLocation() != null) {
+                    addLocationButton.setEnabled(false);
+                }
             }
         });
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // return to home for now
+                // add qr code to account here
+                goHome();
             }
         });
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // actually just go to home
+                goHome();
             }
         });
 
@@ -114,6 +118,11 @@ public class RecieveQRFragment extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
             addLocation();
         }
+    }
+
+    private void goHome() {
+        Fragment frag = new ScanFragment();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, frag).commit();
     }
 
 }
