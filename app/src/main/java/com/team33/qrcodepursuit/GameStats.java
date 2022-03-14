@@ -77,18 +77,18 @@ public class GameStats extends GameHistory {
     /**
      * Set the total score for this user stats from the collected QR codes
      */
-    public void setInitialScoreFromData(){
-        if (totalScore != 0)
-            //GameQRProcessor processor = new GameQRProcessor();
-            ;
-        List<String> codes = super.qrCodeHashes;
-        int points = 0;
-        for(int i = 0; i < codes.size(); i++){
-            //int value = processor.calculateScore(codes[i]);
-            points += value;
-        }
-        setTotalScore(points);
-    }
+//    public void setInitialScoreFromData(){
+//        if (totalScore != 0)
+//            //GameQRProcessor processor = new GameQRProcessor();
+//            ;
+//        List<String> codes = super.qrCodeHashes;
+//        int points = 0;
+//        for(int i = 0; i < codes.size(); i++){
+//            //int value = processor.calculateScore(codes[i]);
+//            points += value;
+//        }
+//        setTotalScore(points);
+//    }
 
     /**
      * Add points to this associated user's total score
@@ -102,10 +102,10 @@ public class GameStats extends GameHistory {
      * Add score to the total points for this associated user.
      * @param code - A QR code object
      */
-    public void addPoints(GameQRCode code){
-        GameQRProcessor processor = new GameQRProcessor();
-        this.totalPoints += processor.getScore(code);
-    }
+//    public void addPoints(GameQRCode code){
+//        GameQRProcessor processor = new GameQRProcessor();
+//        this.totalPoints += processor.getScore(code);
+//    }
 
     /**
      * Get the total score calculated for this associated user.
@@ -119,25 +119,25 @@ public class GameStats extends GameHistory {
      * Get the number of QR codes collected from this associated user.
      * @return  number of QR codes
      */
-    public int getTotalQRCodes() {
-        return super.getCodeHistory().size();
-    }
+    //public int getTotalQRCodes() {
+        //return super.getCodeHistory().size();
+    //}
 
     /**
      * Get the QR code of the lowest value collected from this associated user.
      * @return lowest value QR code
      */
-    public GameQRCode getLowestQRCode(){
-        return this.currentLowest;
-    }
+//    public GameQRCode getLowestQRCode(){
+//        return this.currentLowest;
+//    }
 
     /**
      * Get the QR code of the lowest value from this associated user.
      * @return highest value QR code
      */
-    public GameQRCode getHighestQRCode(){
-        return this.currentHighest;
-    }
+//    public GameQRCode getHighestQRCode(){
+//        return this.currentHighest;
+//    }
 
     /**
      * Set total QR code points total to a specific value.

@@ -27,6 +27,9 @@ public class GameHistory {
     String associatedUsername;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    public GameHistory(){
+        ;
+    }
     /**
      * Create a GameHistory with the associated username attached.
      * @param username
