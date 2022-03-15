@@ -1,13 +1,5 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.models;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -28,7 +20,7 @@ public class GameHistory {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public GameHistory(){
-        ;
+        //
     }
     /**
      * Create a GameHistory with the associated username attached.
@@ -39,9 +31,9 @@ public class GameHistory {
 
     }
 
-    /**
-     * Force sync of local contents with remote copy.
-     */
+//    /**
+//     * Force sync of local contents with remote copy.
+//     */
 //    private void forceSyncWithServer(){
 //        DocumentReference docRef = db.collection("Accounts").document(associatedUsername);
 //        List<String> qrCodeNames = new List<String>();
@@ -71,13 +63,13 @@ public class GameHistory {
 //        //some other method to make the necessary QR classes and to replace the codeHistory contents
 //    }
 
-    /**
-     * Add a QR code to the QR codes collected, both remotely and locally.
-     * @param gameQRCode
-     */
-    //public void addCode(GameQRCode gameQRCode){
-        //codeHistory.add(gameQRCode);
-    //}
+//    /**
+//     * Add a QR code to the QR codes collected, both remotely and locally.
+//     * @param gameQRCode
+//     */
+//    public void addCode(GameQRCode gameQRCode){
+//        codeHistory.add(gameQRCode);
+//    }
 
     /**
      * Get the GameStats class associated with this GameHistory
@@ -103,11 +95,11 @@ public class GameHistory {
         return associatedUsername;
     }
 
-    /**
-     * Get the array of QR codes collected by this user.
-     * @return codeHistory - an ArrayList of QR code data
-     */
-    //public ArrayList<GameQRCode> getCodeHistory(){
-        //return this.codeHistory;
-    //}
+//    /**
+//     * Get the array of QR codes collected by this user.
+//     * @return codeHistory - an ArrayList of QR code data
+//     */
+//    public ArrayList<GameQRCode> getCodeHistory(){
+//        return this.codeHistory;
+//    }
 }

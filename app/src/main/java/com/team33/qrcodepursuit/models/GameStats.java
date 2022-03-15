@@ -1,4 +1,4 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.models;
 
 
 // User issues
@@ -26,8 +26,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.List;
+import com.team33.qrcodepursuit.models.GameHistory;
 
 public class GameStats extends GameHistory {
     private static final String TAG = "Test";
@@ -51,34 +50,31 @@ public class GameStats extends GameHistory {
         super();
         DocumentReference doc = database.collection("Accounts").document(username);
 
-        doc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        Log.d(TAG,"username is" + document.get("username"));
-                        associatedUsername = (String) document.get("username");
-                        Log.d(TAG,"totalScore is" + document.get("totalScore"));
-                        totalScore = (int) document.get("totalScore");
-                        Log.d(TAG,"highestQR is" + document.get("highestQR"));
-                        highestQRAttained = (int) document.get("highestQR");
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
+        doc.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    Log.d(TAG,"username is" + document.get("username"));
+                    associatedUsername = (String) document.get("username");
+                    Log.d(TAG,"totalScore is" + document.get("totalScore"));
+                    totalScore = (int) document.get("totalScore");
+                    Log.d(TAG,"highestQR is" + document.get("highestQR"));
+                    highestQRAttained = (int) document.get("highestQR");
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    Log.d(TAG, "No such document");
                 }
-
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
             }
+
         });
     }
 
 
-    /**
-     * Set the total score for this user stats from the collected QR codes
-     */
+//    /**
+//     * Set the total score for this user stats from the collected QR codes
+//     */
 //    public void setInitialScoreFromData(){
 //        if (totalScore != 0)
 //            //GameQRProcessor processor = new GameQRProcessor();
@@ -100,10 +96,10 @@ public class GameStats extends GameHistory {
         this.totalScore += points;
     }
 
-    /**
-     * Add score to the total points for this associated user.
-     * @param code - A QR code object
-     */
+//    /**
+//     * Add score to the total points for this associated user.
+//     * @param code - A QR code object
+//     */
 //    public void addPoints(GameQRCode code){
 //        GameQRProcessor processor = new GameQRProcessor();
 //        this.totalPoints += processor.getScore(code);
@@ -117,26 +113,26 @@ public class GameStats extends GameHistory {
         return totalScore;
     }
 
-    /**
-     * Get the number of QR codes collected from this associated user.
-     * @return  number of QR codes
-     */
+//    /**
+//     * Get the number of QR codes collected from this associated user.
+//     * @return  number of QR codes
+//     */
     //public int getTotalQRCodes() {
         //return super.getCodeHistory().size();
     //}
 
-    /**
-     * Get the QR code of the lowest value collected from this associated user.
-     * @return lowest value QR code
-     */
+//    /**
+//     * Get the QR code of the lowest value collected from this associated user.
+//     * @return lowest value QR code
+//     */
 //    public GameQRCode getLowestQRCode(){
 //        return this.currentLowest;
 //    }
 
-    /**
-     * Get the QR code of the lowest value from this associated user.
-     * @return highest value QR code
-     */
+//    /**
+//     * Get the QR code of the lowest value from this associated user.
+//     * @return highest value QR code
+//     */
 //    public GameQRCode getHighestQRCode(){
 //        return this.currentHighest;
 //    }

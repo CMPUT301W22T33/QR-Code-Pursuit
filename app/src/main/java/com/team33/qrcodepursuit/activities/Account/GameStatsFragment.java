@@ -1,4 +1,4 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.activities.Account;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,14 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.ListFragment;
 
-import java.sql.Array;
+import com.team33.qrcodepursuit.R;
+import com.team33.qrcodepursuit.models.GameStats;
+
 import java.util.ArrayList;
 
 public class GameStatsFragment extends Fragment {
@@ -51,11 +51,8 @@ public class GameStatsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         closeButton = (Button) view.findViewById(R.id.close_button);
-        closeButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                getActivity().getFragmentManager().popBackStack();
-            }
-        });
+        closeButton.setOnClickListener(v ->
+                getActivity().getFragmentManager().popBackStack());
     }
 
 
