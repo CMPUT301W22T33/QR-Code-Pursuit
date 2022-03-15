@@ -25,7 +25,7 @@ SOFTWARE.
 
 // also, perhaps make this multipurpose (use for login), and the qrreader dependency isn't needed anymore
 
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.activities.Home;
 
 import android.Manifest;
 import android.app.Activity;
@@ -45,6 +45,9 @@ import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.zxing.Result;
+import com.team33.qrcodepursuit.R;
+import com.team33.qrcodepursuit.activities.Home.RecieveQRFragment;
+import com.team33.qrcodepursuit.models.GameQRCode;
 
 /**
  * first fragment, automatically scans for QR code

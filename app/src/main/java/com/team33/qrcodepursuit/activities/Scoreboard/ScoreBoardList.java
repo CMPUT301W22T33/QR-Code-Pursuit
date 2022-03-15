@@ -1,4 +1,4 @@
-package com.team33.qrcodepursuit;
+package com.team33.qrcodepursuit.activities.Scoreboard;
 
 
 import android.content.Context;
@@ -6,12 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.w3c.dom.Text;
+import com.team33.qrcodepursuit.R;
+import com.team33.qrcodepursuit.models.Player;
 
 import java.util.ArrayList;
 

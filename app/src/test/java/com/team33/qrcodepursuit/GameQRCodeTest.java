@@ -9,6 +9,8 @@ comments are addable and gettable*
 
 package com.team33.qrcodepursuit;
 
+import com.team33.qrcodepursuit.models.GameQRCode;
+
 import org.junit.Before;
 
 public class GameQRCodeTest {

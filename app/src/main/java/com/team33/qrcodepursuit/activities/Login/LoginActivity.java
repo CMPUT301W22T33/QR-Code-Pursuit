@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.team33.qrcodepursuit.MainActivity;
+import com.team33.qrcodepursuit.activities.MainActivity;
 import com.team33.qrcodepursuit.R;
 
 /**
@@ -70,10 +71,10 @@ public class LoginActivity extends AppCompatActivity
             gotoMainActivity(currentUser);
         // log in with email+pw
         login_button.setOnClickListener(view -> {
-            String email = login_email_field.getText().toString();
-            String passw = login_passw_field.getText().toString(); // todo: seems pretty insecure
-            if (email.isEmpty() && passw.isEmpty()) return;
-            mAuth.signInWithEmailAndPassword(email, passw)
+            Editable email = login_email_field.getText();
+            Editable passw = login_passw_field.getText(); // todo: seems pretty insecure
+            if (email == null || passw == null) return;
+            mAuth.signInWithEmailAndPassword(email.toString(), passw.toString())
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             // switch to MainActivity
@@ -81,8 +82,8 @@ public class LoginActivity extends AppCompatActivity
                             gotoMainActivity(mAuth.getCurrentUser());
                         }
                         else {
-                            login_email_field.getText().clear();
-                            login_passw_field.getText().clear();
+                            email.clear();
+                            passw.clear();
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed",
                                     Toast.LENGTH_SHORT).show();

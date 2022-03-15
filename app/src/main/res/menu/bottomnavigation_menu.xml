@@ -2,17 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/bottomnavigation_menu_scoreboard"
-        android:icon="?android:attr/actionModeFindDrawable"
-        android:title="Scoreboard" />
-    <item
         android:id="@+id/bottomnavigation_menu_home"
         android:title="Home"
         android:icon="@drawable/ic_baseline_home_24"/>
 
     <item
-        android:id="@+id/bottomnavigation_menu_scan"
-        android:icon="?android:attr/actionModeWebSearchDrawable"
-        android:title="Scan" />
+        android:id="@+id/bottomnavigation_menu_map"
+        android:title="Map"
+        android:icon="@drawable/ic_baseline_map_24"/>
+
+    <item
+        android:id="@+id/bottomnavigation_menu_scoreboard"
+        android:title="Leaderboard"
+        android:icon="@drawable/ic_baseline_trophy_24"/>
+
+    <item
+        android:id="@+id/bottomnavigation_menu_account"
+        android:title="Account"
+        android:icon="@drawable/ic_baseline_profile_24"/>
 
 </menu>
