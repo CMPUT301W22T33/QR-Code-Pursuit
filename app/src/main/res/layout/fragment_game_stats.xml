@@ -22,7 +22,7 @@
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         app:backgroundTint="#000000"
-        app:icon="@drawable/ic_close"
+        app:icon="@drawable/ic_baseline_close_24"
         app:iconTint="#FFFFFF">
     </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
 
