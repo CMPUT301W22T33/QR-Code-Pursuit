@@ -1,0 +1,21 @@
+March 25, 2022
+- tie halfway point issues so they function together
+- assigning remaining issues
+- gameqrclass fleshout; remove actual QR raw data
+	- how to display QR codes without a photo; just put question mark
+- how to assign QRs to players; what are accounts even
+	- just make a custom account class that fits into firestore
+	- on that note, make QR code the same way to fit into firestore
+- account document identifier as UID (on firestore)
+- MAP
+- navigation thru android navigation component
+	- how leaderboard navigation would work
+	- apply this to scan as well
+- how to store images in firestore
+- gameQRinfo fragment for when leaderboard/map QR codes are clicked
+- should gameQRcode own comments, or should it just be a DB thing
+- comments handled on the fly in gameQRinfo
+
+- WAIFU holding a gigantic qr (but seriously, placeholder img for qr without photo)
+
+next meeting tuesday
