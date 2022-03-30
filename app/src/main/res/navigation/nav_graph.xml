@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/bottomnavigation_menu_home">
+
+    <fragment
+        android:id="@+id/bottomnavigation_menu_home"
+        android:name="com.team33.qrcodepursuit.activities.Home.ScanFragment"
+        android:label="ScanFragment" >
+        <action
+            android:id="@+id/action_scanFragment_to_recieveQRFragment"
+            app:destination="@id/recieveQRFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recieveQRFragment"
+        android:name="com.team33.qrcodepursuit.activities.Home.RecieveQRFragment"
+        android:label="RecieveQRFragment" />
+    <fragment
+        android:id="@+id/bottomnavigation_menu_scoreboard"
+        android:name="com.team33.qrcodepursuit.activities.Scoreboard.ScoreBoardFragment"
+        android:label="fragment_score_board"
+        tools:layout="@layout/fragment_score_board" />
+</navigation>

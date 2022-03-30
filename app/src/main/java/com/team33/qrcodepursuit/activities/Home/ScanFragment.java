@@ -31,6 +31,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
@@ -57,6 +60,7 @@ public class ScanFragment extends Fragment {
     public static String QRKEY = "com.team33.qrcodepursuit.NEWQR";
 
     private CodeScanner qrScanner;
+    private NavController navController;
 
     private ActivityResultLauncher<String> requestPermissionLauncher
       = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -81,6 +85,8 @@ public class ScanFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        navController = Navigation.findNavController(container);
+
         // not sure where else to put this
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             // all good
@@ -100,11 +106,17 @@ public class ScanFragment extends Fragment {
                 Bundle args = new Bundle();
                 GameQRCode newQR = new GameQRCode(result);
                 args.putParcelable(QRKEY, newQR);
-                RecieveQRFragment newFrag = new RecieveQRFragment();
-                newFrag.setArguments(args);
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, newFrag, "scannedFrag")
-                        .commit();
+
+                // give this to UI thread so it doesn't complain/mess up camera
+                Handler handler = new Handler(getContext().getMainLooper());
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        navController.navigate(R.id.action_scanFragment_to_recieveQRFragment, args);
+                    }
+                };
+                handler.post(runnable);
+
             }
         });
 
