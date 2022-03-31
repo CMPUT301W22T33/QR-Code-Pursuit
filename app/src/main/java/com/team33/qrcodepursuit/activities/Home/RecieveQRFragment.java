@@ -20,6 +20,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -40,6 +42,7 @@ public class RecieveQRFragment extends Fragment {
     private TextView qrScore;
     private GameQRCode qr;
 
+    private NavController navController;
     private FusedLocationProviderClient fusedLocationClient;
 
     private ActivityResultLauncher<String> requestPermissionLauncher
@@ -68,6 +71,8 @@ public class RecieveQRFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
         Bundle b = getArguments();
         qr = (GameQRCode) b.getParcelable(ScanFragment.QRKEY);
+
+        navController = Navigation.findNavController(container);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
@@ -156,8 +161,7 @@ public class RecieveQRFragment extends Fragment {
     }
 
     private void goHome() {
-        Fragment frag = new ScanFragment();
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, frag).commit();
+        navController.popBackStack();
     }
 
 }
