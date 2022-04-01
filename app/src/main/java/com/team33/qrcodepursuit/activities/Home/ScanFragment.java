@@ -30,6 +30,7 @@ package com.team33.qrcodepursuit.activities.Home;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -58,6 +59,7 @@ import com.team33.qrcodepursuit.models.GameQRCode;
 public class ScanFragment extends Fragment {
 
     public static String QRKEY = "com.team33.qrcodepursuit.NEWQR";
+    public static String QRBMP = "com.team33.qrcodepursuit.NEWBMP";
 
     private CodeScanner qrScanner;
     private NavController navController;
@@ -105,7 +107,9 @@ public class ScanFragment extends Fragment {
                 // generate qr object and kick to another frag
                 Bundle args = new Bundle();
                 GameQRCode newQR = new GameQRCode(result);
+                Bitmap bitm = GameQRCode.getQRImage(result.getText());
                 args.putParcelable(QRKEY, newQR);
+                args.putParcelable(QRBMP, bitm);
 
                 // give this to UI thread so it doesn't complain/mess up camera
                 Handler handler = new Handler(getContext().getMainLooper());

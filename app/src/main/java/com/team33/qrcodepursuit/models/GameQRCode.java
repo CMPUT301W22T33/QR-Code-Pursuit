@@ -20,12 +20,29 @@ import java.util.ArrayList;
  */
 public class GameQRCode implements Parcelable {
 
-    private String qrText;
-    private byte[] qrRaw;
+    private byte[] qrHash;
     private ArrayList<String> comments;
     private Bitmap image;
     private Location location;
     private int score;
+
+    /**
+     * using the "raw" qr information, create a visual bitmap
+     * @return a bitmap representing the QR code visually
+     */
+    public static Bitmap getQRImage(String qrText) {
+        QRCodeWriter writer = new QRCodeWriter(); // this should be in other class later on
+        BitMatrix bitm = null;
+        try {
+            bitm = writer.encode(qrText, BarcodeFormat.QR_CODE, 300, 300);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+        return MatrixToImageWriter.toBitmap(bitm);
+    }
+
+    // for firestore
+    public GameQRCode() {}
 
     /**
      * construct a GameQRCode using Result from qrscanner
@@ -33,18 +50,26 @@ public class GameQRCode implements Parcelable {
      * @param code raw data from scanner result
      */
     public GameQRCode(Result code) {
-        qrText = code.getText();
-        qrRaw = code.getRawBytes();
+        qrHash = code.getRawBytes(); // does store original qr very briefly
         comments = new ArrayList<String>();
         location = null;
         image = null;
         score = 0;
 
-        // calculate score now
-        // extremely basic; +10 score if current byte is greater than the previous byte
-        for (int i = 1; i < qrRaw.length; i++) {
-            if (qrRaw[i] > qrRaw[i-1]) { score += 1; }
+        /* calculate score
+         * first, multiply current byte by next one, cast back into byte
+         * extra good cause it ditches some data; original qr is not stored
+         * then, get 1 point every time current byte is lesser than the next one
+         * n^2 time but qr codes are never going to get large enough
+         */
+        for (int i = 1; i < qrHash.length; i++) {
+            qrHash[i] = (byte) (qrHash[i] * qrHash[i-1]);
         }
+        for (int i = 1; i < qrHash.length; i++) {
+            if (qrHash[i] > qrHash[i-1]) { score += 1; }
+        }
+
+        System.out.println(score);
     }
 
     /**
@@ -52,10 +77,11 @@ public class GameQRCode implements Parcelable {
      * @param in the parcel to unpack
      */
     protected GameQRCode(Parcel in) {
-        qrText = in.readString();
+        qrHash = in.createByteArray();
         comments = in.createStringArrayList();
         image = in.readParcelable(Bitmap.class.getClassLoader());
         location = in.readParcelable(Location.class.getClassLoader());
+        score = in.readInt();
     }
 
     public static final Creator<GameQRCode> CREATOR = new Creator<GameQRCode>() {
@@ -70,14 +96,14 @@ public class GameQRCode implements Parcelable {
         }
     };
 
+    // getters
+    public byte[] getQrHash() { return qrHash; }
+    public ArrayList<String> getComments() { return comments; }
+    public Bitmap getImage() { return image; }
+    public Location getLocation() { return location; }
+    public int getScore() { return score; }
 
-    public void setImage(Bitmap source) {
-        image = source;
-    }
-
-    public Bitmap getImage() {
-        return image;
-    }
+    public void setImage(Bitmap source) { image = source; }
 
     public void addComment(String comment) {
         comments.add(comment);
@@ -85,30 +111,6 @@ public class GameQRCode implements Parcelable {
 
     public void setLocation(Location loc) {
         location = loc;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    /**
-     * using the "raw" qr information, create a visual bitmap
-     * @return a bitmap representing the QR code visually
-     */
-    public Bitmap getQRImage() {
-        QRCodeWriter writer = new QRCodeWriter(); // this should be in other class later on
-        BitMatrix bitm = null;
-        try {
-            bitm = writer.encode(qrText, BarcodeFormat.QR_CODE, 300, 300);
-            // super weird - the generated QR code looks different but the result is the same
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-        return MatrixToImageWriter.toBitmap(bitm);
     }
 
     @Override
@@ -123,9 +125,10 @@ public class GameQRCode implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(qrText);
+        parcel.writeByteArray(qrHash);
         parcel.writeStringArray(comments.toArray(new String[0]));
         parcel.writeParcelable(image,0);
         parcel.writeParcelable(location, 0);
+        parcel.writeInt(score);
     }
 }

@@ -26,6 +26,8 @@ import androidx.navigation.Navigation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.GameQRCode;
 
@@ -44,6 +46,7 @@ public class RecieveQRFragment extends Fragment {
 
     private NavController navController;
     private FusedLocationProviderClient fusedLocationClient;
+    private FirebaseUser user;
 
     private ActivityResultLauncher<String> requestPermissionLauncher
             = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -82,7 +85,7 @@ public class RecieveQRFragment extends Fragment {
         cancelButton = view.findViewById(R.id.recieveqr_button_cancel);
         qrImage = view.findViewById(R.id.recieveqr_imageview_qrimage);
 
-        qrImage.setImageBitmap(qr.getQRImage());
+        qrImage.setImageBitmap(b.getParcelable(ScanFragment.QRBMP));
 
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
