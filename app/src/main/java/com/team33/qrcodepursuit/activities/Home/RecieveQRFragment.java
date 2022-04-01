@@ -28,6 +28,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.GameQRCode;
 
@@ -46,7 +48,7 @@ public class RecieveQRFragment extends Fragment {
 
     private NavController navController;
     private FusedLocationProviderClient fusedLocationClient;
-    private FirebaseUser user;
+    private FirebaseFirestore db;
 
     private ActivityResultLauncher<String> requestPermissionLauncher
             = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -70,9 +72,17 @@ public class RecieveQRFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // all good
+        } else { // extra step should be here but meh
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
         Activity activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
         Bundle b = getArguments();
+        db = FirebaseFirestore.getInstance();
         qr = (GameQRCode) b.getParcelable(ScanFragment.QRKEY);
 
         navController = Navigation.findNavController(container);
@@ -111,7 +121,7 @@ public class RecieveQRFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // add qr code to account here
+                db.collection("GameQRs").add(qr);
                 goHome();
             }
         });
@@ -138,6 +148,7 @@ public class RecieveQRFragment extends Fragment {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             qr.setImage(imageBitmap);
+            qrImage.setImageBitmap(imageBitmap);
             if (qr.getImage() != null) {
                 addPhotoButton.setText("Retake photo");
             }
@@ -157,6 +168,7 @@ public class RecieveQRFragment extends Fragment {
                         }
                     });
         } else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            addLocationButton.setText("Permission Denied");
             addLocationButton.setEnabled(false);
         }
         else {

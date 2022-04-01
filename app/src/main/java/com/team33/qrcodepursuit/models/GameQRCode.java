@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public class GameQRCode implements Parcelable {
 
-    private byte[] qrHash;
+    private ArrayList<Integer> qrHash;
     private ArrayList<String> comments;
     private Bitmap image;
     private Location location;
@@ -50,7 +50,11 @@ public class GameQRCode implements Parcelable {
      * @param code raw data from scanner result
      */
     public GameQRCode(Result code) {
-        qrHash = code.getRawBytes(); // does store original qr very briefly
+        // does store original qr very briefly
+        qrHash = new ArrayList<Integer>();
+        for (byte value : code.getRawBytes()) {
+            qrHash.add((int) value);
+        }
         comments = new ArrayList<String>();
         location = null;
         image = null;
@@ -60,12 +64,12 @@ public class GameQRCode implements Parcelable {
          * extra good because some data is tossed, original qr not stored
          * n^2 time but qr codes are never going to get large enough
          */
-        for (int i = 1; i < qrHash.length; i++) {
-            qrHash[i] = (byte) (qrHash[i] * qrHash[i]);
+        for (int i = 1; i < qrHash.size(); i++) {
+            qrHash.set(i, (qrHash.get(i) * qrHash.get(i)));
         }
         int streak = 1;
-        for (int i = 1; i < qrHash.length; i++) {
-            if (qrHash[i] > qrHash[i-1]) {
+        for (int i = 1; i < qrHash.size(); i++) {
+            if (qrHash.get(i) > qrHash.get(i-1)) {
                 score += streak;
                 streak += 1;
             } else { streak = 1; }
@@ -77,11 +81,11 @@ public class GameQRCode implements Parcelable {
      * @param in the parcel to unpack
      */
     protected GameQRCode(Parcel in) {
-        qrHash = in.createByteArray();
         comments = in.createStringArrayList();
         image = in.readParcelable(Bitmap.class.getClassLoader());
         location = in.readParcelable(Location.class.getClassLoader());
         score = in.readInt();
+        qrHash = (ArrayList<Integer>) in.readSerializable();
     }
 
     public static final Creator<GameQRCode> CREATOR = new Creator<GameQRCode>() {
@@ -97,7 +101,7 @@ public class GameQRCode implements Parcelable {
     };
 
     // getters
-    public byte[] getQrHash() { return qrHash; }
+    public ArrayList<Integer> getQrHash() { return qrHash; }
     public ArrayList<String> getComments() { return comments; }
     public Bitmap getImage() { return image; }
     public Location getLocation() { return location; }
@@ -125,10 +129,11 @@ public class GameQRCode implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeByteArray(qrHash);
         parcel.writeStringArray(comments.toArray(new String[0]));
         parcel.writeParcelable(image,0);
         parcel.writeParcelable(location, 0);
         parcel.writeInt(score);
+        parcel.writeSerializable(qrHash);
+
     }
 }
