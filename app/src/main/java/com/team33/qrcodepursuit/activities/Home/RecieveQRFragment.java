@@ -84,8 +84,10 @@ public class RecieveQRFragment extends Fragment {
         submitButton = view.findViewById(R.id.recieveqr_button_submit);
         cancelButton = view.findViewById(R.id.recieveqr_button_cancel);
         qrImage = view.findViewById(R.id.recieveqr_imageview_qrimage);
+        qrScore = view.findViewById(R.id.recieveqr_textview_qrscore);
 
         qrImage.setImageBitmap(b.getParcelable(ScanFragment.QRBMP));
+        qrScore.setText("Score: " + qr.getScore());
 
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override

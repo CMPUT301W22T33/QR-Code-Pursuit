@@ -57,19 +57,19 @@ public class GameQRCode implements Parcelable {
         score = 0;
 
         /* calculate score
-         * first, multiply current byte by next one, cast back into byte
-         * extra good cause it ditches some data; original qr is not stored
-         * then, get 1 point every time current byte is lesser than the next one
+         * extra good because some data is tossed, original qr not stored
          * n^2 time but qr codes are never going to get large enough
          */
         for (int i = 1; i < qrHash.length; i++) {
-            qrHash[i] = (byte) (qrHash[i] * qrHash[i-1]);
+            qrHash[i] = (byte) (qrHash[i] * qrHash[i]);
         }
+        int streak = 1;
         for (int i = 1; i < qrHash.length; i++) {
-            if (qrHash[i] > qrHash[i-1]) { score += 1; }
+            if (qrHash[i] > qrHash[i-1]) {
+                score += streak;
+                streak += 1;
+            } else { streak = 1; }
         }
-
-        System.out.println(score);
     }
 
     /**
