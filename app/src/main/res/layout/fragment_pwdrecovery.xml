@@ -7,15 +7,6 @@
     android:focusable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
-    tools:context=".activities.Login.LoginActivity">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/login_navhost"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_login"/>
+    tools:context=".activities.Login.ForgotPwdFragment">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

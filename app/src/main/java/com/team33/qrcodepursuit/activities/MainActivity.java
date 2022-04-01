@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
         // switch between fragments with bottom navigation menu
-        // add frags in nav_graph.xml
+        // add frags in nav_main.xml
         // ensure frag id in nav_graph.xml matches id in bottomnavigationmenu.xml
         menu = findViewById(R.id.bottomnavigation);
         NavigationUI.setupWithNavController(menu, navController);
