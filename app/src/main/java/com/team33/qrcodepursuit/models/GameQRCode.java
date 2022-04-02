@@ -2,6 +2,7 @@ package com.team33.qrcodepursuit.models;
 
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -22,7 +23,7 @@ public class GameQRCode implements Parcelable {
 
     private ArrayList<Integer> qrHash;
     private ArrayList<String> comments;
-    private Bitmap image;
+    private Uri imageURL;
     private Location location;
     private int score;
 
@@ -57,7 +58,7 @@ public class GameQRCode implements Parcelable {
         }
         comments = new ArrayList<String>();
         location = null;
-        image = null;
+        imageURL = null;
         score = 0;
 
         /* calculate score
@@ -82,7 +83,7 @@ public class GameQRCode implements Parcelable {
      */
     protected GameQRCode(Parcel in) {
         comments = in.createStringArrayList();
-        image = in.readParcelable(Bitmap.class.getClassLoader());
+        imageURL = in.readParcelable(Uri.class.getClassLoader());
         location = in.readParcelable(Location.class.getClassLoader());
         score = in.readInt();
         qrHash = (ArrayList<Integer>) in.readSerializable();
@@ -103,11 +104,9 @@ public class GameQRCode implements Parcelable {
     // getters
     public ArrayList<Integer> getQrHash() { return qrHash; }
     public ArrayList<String> getComments() { return comments; }
-    public Bitmap getImage() { return image; }
+    public Uri getImageURL() { return imageURL; }
     public Location getLocation() { return location; }
     public int getScore() { return score; }
-
-    public void setImage(Bitmap source) { image = source; }
 
     public void addComment(String comment) {
         comments.add(comment);
@@ -116,6 +115,8 @@ public class GameQRCode implements Parcelable {
     public void setLocation(Location loc) {
         location = loc;
     }
+
+    public void setImageURL(Uri uri) { imageURL = uri; }
 
     @Override
     public int describeContents() {
@@ -130,7 +131,7 @@ public class GameQRCode implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(comments.toArray(new String[0]));
-        parcel.writeParcelable(image,0);
+        parcel.writeParcelable(imageURL, 0);
         parcel.writeParcelable(location, 0);
         parcel.writeInt(score);
         parcel.writeSerializable(qrHash);

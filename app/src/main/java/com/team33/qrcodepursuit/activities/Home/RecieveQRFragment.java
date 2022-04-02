@@ -6,7 +6,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -25,13 +28,26 @@ import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.GameQRCode;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 /**
  * handle adding identifying photo and location to GameQRCode
@@ -121,8 +137,7 @@ public class RecieveQRFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                db.collection("GameQRs").add(qr);
-                goHome();
+                submit();
             }
         });
 
@@ -147,11 +162,64 @@ public class RecieveQRFragment extends Fragment {
         if (requestCode == 1 && resultCode == -1) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            qr.setImage(imageBitmap);
             qrImage.setImageBitmap(imageBitmap);
-            if (qr.getImage() != null) {
+            if (qrImage.getDrawable() != null) {
                 addPhotoButton.setText("Retake photo");
             }
+        }
+    }
+
+    private void submit() {
+        // update owner logic
+        // only add new gameQR if doesn't exist beforehand
+        CollectionReference qrcol = db.collection("GameQRs");
+        final boolean[] addNewQR = {true};
+        qrcol.whereEqualTo("qrHash", qr.getQrHash()).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                // this step mostly just to be sure that search worked
+                                if ( doc.getData().get("qrHash").equals(qr.getQrHash()) ) {
+                                    // todo: set user as another owner of the scanned qr
+                                    // also let user know that their location and photo just got tossed lol
+
+                                    addNewQR[0] = false;
+                                }
+                            }
+                        }
+                    }
+                });
+
+        // add new qr
+        if (addNewQR[0]) {
+            // todo: upload img and assign to qr
+            StorageReference storage = FirebaseStorage.getInstance().getReference();
+            final String[] id = {null}; // probably deprecated but keep it around for now
+            qrcol.add(qr).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    id[0] = documentReference.getId();
+                }
+            });
+            
+            StorageReference ref = storage.child("qrImages/" + id[0]);
+            Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] data = byteArrayOutputStream.toByteArray();
+
+            UploadTask uploadTask = ref.putBytes(data);
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    qr.setImageURL(ref.getDownloadUrl().getResult());
+                }
+            });
+
+            goHome();
         }
     }
 
