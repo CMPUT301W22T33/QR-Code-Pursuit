@@ -6,7 +6,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -25,9 +28,31 @@ import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.GameQRCode;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * handle adding identifying photo and location to GameQRCode
@@ -44,6 +69,7 @@ public class RecieveQRFragment extends Fragment {
 
     private NavController navController;
     private FusedLocationProviderClient fusedLocationClient;
+    private FirebaseFirestore db;
 
     private ActivityResultLauncher<String> requestPermissionLauncher
             = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -67,9 +93,17 @@ public class RecieveQRFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // all good
+        } else { // extra step should be here but meh
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
         Activity activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
         Bundle b = getArguments();
+        db = FirebaseFirestore.getInstance();
         qr = (GameQRCode) b.getParcelable(ScanFragment.QRKEY);
 
         navController = Navigation.findNavController(container);
@@ -81,8 +115,10 @@ public class RecieveQRFragment extends Fragment {
         submitButton = view.findViewById(R.id.recieveqr_button_submit);
         cancelButton = view.findViewById(R.id.recieveqr_button_cancel);
         qrImage = view.findViewById(R.id.recieveqr_imageview_qrimage);
+        qrScore = view.findViewById(R.id.recieveqr_textview_qrscore);
 
-        qrImage.setImageBitmap(qr.getQRImage());
+        qrImage.setImageBitmap(b.getParcelable(ScanFragment.QRBMP));
+        qrScore.setText("Score: " + qr.getScore());
 
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,8 +142,7 @@ public class RecieveQRFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // add qr code to account here
-                goHome();
+                submit();
             }
         });
 
@@ -132,11 +167,75 @@ public class RecieveQRFragment extends Fragment {
         if (requestCode == 1 && resultCode == -1) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            qr.setImage(imageBitmap);
-            if (qr.getImage() != null) {
+            qrImage.setImageBitmap(imageBitmap);
+            if (qrImage.getDrawable() != null) {
                 addPhotoButton.setText("Retake photo");
             }
         }
+    }
+
+    private void submit() {
+        // update owner logic
+        // if qr already exists
+        CollectionReference qrcol = db.collection("GameQRs");
+        final boolean[] addNewQR = {true};
+        Task<QuerySnapshot> findMatches = qrcol.whereEqualTo("qrHash", qr.getQrHash()).get();
+        findMatches
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                // todo: set user as another owner of the scanned qr
+                                // also let user know that their location and photo just got tossed lol
+                                addNewQR[0] = false;
+                            }
+                            if (addNewQR[0]) {
+                                addQRCode();
+                            } else {
+                                goHome();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void addQRCode() {
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        CollectionReference qrcol = db.collection("GameQRs");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        qr.setOwner(user.getUid());
+
+        qrcol.add(qr).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                String id = documentReference.getId();
+
+                StorageReference ref = storage.child("qrImages/" + id + ".jpg");
+                Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                byte[] data = byteArrayOutputStream.toByteArray();
+
+                UploadTask uploadTask = ref.putBytes(data);
+
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String url = uri.toString();
+                                qrcol.document(id).update("imageURL", url);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        goHome();
     }
 
     private void addLocation() {
@@ -152,6 +251,7 @@ public class RecieveQRFragment extends Fragment {
                         }
                     });
         } else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            addLocationButton.setText("Permission Denied");
             addLocationButton.setEnabled(false);
         }
         else {
