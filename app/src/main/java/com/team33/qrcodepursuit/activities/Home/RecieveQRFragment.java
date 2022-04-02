@@ -47,10 +47,12 @@ import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.GameQRCode;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * handle adding identifying photo and location to GameQRCode
@@ -177,61 +179,63 @@ public class RecieveQRFragment extends Fragment {
         // if qr already exists
         CollectionReference qrcol = db.collection("GameQRs");
         final boolean[] addNewQR = {true};
-        qrcol.whereEqualTo("qrHash", qr.getQrHash()).get()
+        Task<QuerySnapshot> findMatches = qrcol.whereEqualTo("qrHash", qr.getQrHash()).get();
+        findMatches
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot doc : task.getResult()) {
-                                // this step mostly just to be sure that search worked
-                                if ( doc.getData().get("qrHash").equals(qr.getQrHash()) ) {
-                                    // todo: set user as another owner of the scanned qr
-                                    // also let user know that their location and photo just got tossed lol
-
-                                    addNewQR[0] = false;
-                                }
+                                // todo: set user as another owner of the scanned qr
+                                // also let user know that their location and photo just got tossed lol
+                                addNewQR[0] = false;
+                            }
+                            if (addNewQR[0]) {
+                                addQRCode();
+                            } else {
+                                goHome();
                             }
                         }
                     }
                 });
+    }
 
-        // add new qr
-        if (addNewQR[0]) {
-            // todo: upload img and assign to qr
-            StorageReference storage = FirebaseStorage.getInstance().getReference();
+    private void addQRCode() {
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        CollectionReference qrcol = db.collection("GameQRs");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        qr.setOwner(user.getUid());
 
-            qrcol.add(qr).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-                    String id = documentReference.getId();
+        qrcol.add(qr).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                String id = documentReference.getId();
 
-                    System.out.println(id);
+                StorageReference ref = storage.child("qrImages/" + id + ".jpg");
+                Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                byte[] data = byteArrayOutputStream.toByteArray();
 
-                    StorageReference ref = storage.child("qrImages/" + id + ".jpg");
-                    Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                    byte[] data = byteArrayOutputStream.toByteArray();
+                UploadTask uploadTask = ref.putBytes(data);
 
-                    UploadTask uploadTask = ref.putBytes(data);
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String url = uri.toString();
+                                qrcol.document(id).update("imageURL", url);
+                            }
+                        });
+                    }
+                });
+            }
+        });
 
-                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String url = uri.toString();
-                                    qrcol.document(id).update("imageURL", url);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-
-            goHome();
-        }
+        goHome();
     }
 
     private void addLocation() {

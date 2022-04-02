@@ -24,6 +24,7 @@ public class GameQRCode implements Parcelable {
     private ArrayList<Integer> qrHash;
     private ArrayList<String> comments;
     private String imageURL;
+    private String owner;
     private Location location;
     private int score;
 
@@ -59,6 +60,7 @@ public class GameQRCode implements Parcelable {
         comments = new ArrayList<String>();
         location = null;
         imageURL = null;
+        owner = null;
         score = 0;
 
         /* calculate score
@@ -84,6 +86,7 @@ public class GameQRCode implements Parcelable {
     protected GameQRCode(Parcel in) {
         comments = in.createStringArrayList();
         imageURL = in.readString();
+        owner = in.readString();
         location = in.readParcelable(Location.class.getClassLoader());
         score = in.readInt();
         qrHash = (ArrayList<Integer>) in.readSerializable();
@@ -107,6 +110,7 @@ public class GameQRCode implements Parcelable {
     public String getImageURL() { return imageURL; }
     public Location getLocation() { return location; }
     public int getScore() { return score; }
+    public String getOwner() { return owner; }
 
     public void addComment(String comment) {
         comments.add(comment);
@@ -114,6 +118,10 @@ public class GameQRCode implements Parcelable {
 
     public void setLocation(Location loc) {
         location = loc;
+    }
+
+    public void setOwner(String own) {
+        owner = own;
     }
 
     public void setImageURL(String str) { imageURL = str; }
@@ -132,6 +140,7 @@ public class GameQRCode implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(comments.toArray(new String[0]));
         parcel.writeString(imageURL);
+        parcel.writeString(owner);
         parcel.writeParcelable(location, 0);
         parcel.writeInt(score);
         parcel.writeSerializable(qrHash);
