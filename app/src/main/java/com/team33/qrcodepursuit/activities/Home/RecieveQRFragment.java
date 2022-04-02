@@ -48,6 +48,9 @@ import com.team33.qrcodepursuit.models.GameQRCode;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * handle adding identifying photo and location to GameQRCode
@@ -171,7 +174,7 @@ public class RecieveQRFragment extends Fragment {
 
     private void submit() {
         // update owner logic
-        // only add new gameQR if doesn't exist beforehand
+        // if qr already exists
         CollectionReference qrcol = db.collection("GameQRs");
         final boolean[] addNewQR = {true};
         qrcol.whereEqualTo("qrHash", qr.getQrHash()).get()
@@ -196,26 +199,34 @@ public class RecieveQRFragment extends Fragment {
         if (addNewQR[0]) {
             // todo: upload img and assign to qr
             StorageReference storage = FirebaseStorage.getInstance().getReference();
-            final String[] id = {null}; // probably deprecated but keep it around for now
+
             qrcol.add(qr).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
-                    id[0] = documentReference.getId();
-                }
-            });
-            
-            StorageReference ref = storage.child("qrImages/" + id[0]);
-            Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            byte[] data = byteArrayOutputStream.toByteArray();
+                    String id = documentReference.getId();
 
-            UploadTask uploadTask = ref.putBytes(data);
+                    System.out.println(id);
 
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    qr.setImageURL(ref.getDownloadUrl().getResult());
+                    StorageReference ref = storage.child("qrImages/" + id + ".jpg");
+                    Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                    byte[] data = byteArrayOutputStream.toByteArray();
+
+                    UploadTask uploadTask = ref.putBytes(data);
+
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String url = uri.toString();
+                                    qrcol.document(id).update("imageURL", url);
+                                }
+                            });
+                        }
+                    });
                 }
             });
 
