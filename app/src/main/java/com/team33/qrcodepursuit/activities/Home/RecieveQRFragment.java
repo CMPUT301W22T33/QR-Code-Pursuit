@@ -178,7 +178,7 @@ public class RecieveQRFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot doc : task.getResult()) {
-                                // todo: set user as another owner of the scanned qr
+                                // todo: set user as another scanner of the scanned qr
                                 // also let user know that their location and photo just got tossed lol
                                 addNewQR[0] = false;
                             }
