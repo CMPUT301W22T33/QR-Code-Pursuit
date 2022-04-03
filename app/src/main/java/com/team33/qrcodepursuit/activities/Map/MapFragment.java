@@ -39,6 +39,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -63,6 +64,7 @@ public class MapFragment extends Fragment {
     CollectionReference qrs;
     ArrayList<QueryDocumentSnapshot> nearbyScans;
     ArrayList<OverlayItem> overlayItemArray;
+    ItemizedIconOverlay<OverlayItem> itemizedIconOverlay;
 
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
 
@@ -91,48 +93,21 @@ public class MapFragment extends Fragment {
         // Create a reference to the accounts collection
         qrs = db.collection("GameQRs");
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_map, container, false);
-
-        requestPermissionsIfNecessary(new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.INTERNET
-        });
-
-        // Inflate the layout for this fragment
-        map = rootView.findViewById(R.id.mapview);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.getController().setZoom(3.0);
-
-        MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
-        mLocationOverlay.enableMyLocation();
-        GeoPoint myLocation = mLocationOverlay.getMyLocation();
-
-
-        if (myLocation != null) {
-            map.getOverlays().add(mLocationOverlay);
-            map.getController().animateTo(new GeoPoint(myLocation.getLatitude(), 50.0));
-        } else {
-            map.getController().animateTo(new GeoPoint(53.0, 113.0));
-        }
-
         //--- Create Another Overlay for multi marker
         overlayItemArray = new ArrayList<OverlayItem>();
 
-        // Create a query against the collection
         qrs.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        Location location = (Location)document.get("Location");
+                        Map<String, Object> location = (Map<String, Object>)document.get("location");
                         if (location != null) {
-                            GeoPoint QRlocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                            overlayItemArray.add(new OverlayItem(document.getId(), "", QRlocation));
+                            GeoPoint QRlocation = new GeoPoint((double)location.get("latitude"), (double)location.get("longitude"));
+                            itemizedIconOverlay.addItem(new OverlayItem(document.getId(), "", QRlocation));
                         }
+
+                        map.invalidate();
                     }
                 } else {
                     Log.e(TAG, "Error while querying for QRs");
@@ -140,17 +115,39 @@ public class MapFragment extends Fragment {
             }
         });
 
-        ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(
-                this.getActivity(), overlayItemArray, null);
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_map, container, false);
+
+        requestPermissionsIfNecessary(new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.INTERNET
+        });
+
+        // Inflate the layout for this fragment
+        map = rootView.findViewById(R.id.mapview);
+        //map.setTileSource(TileSourceFactory.MAPNIK);
+        map.getController().setZoom(10.0);
+
+        MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
+        mLocationOverlay.enableMyLocation();
+        GeoPoint myLocation = mLocationOverlay.getMyLocation();
+
+        if (myLocation != null) {
+            map.getOverlays().add(mLocationOverlay);
+            map.getController().animateTo(new GeoPoint(myLocation.getLatitude(), myLocation.getLongitude()));
+        } else {
+            map.getController().animateTo(new GeoPoint(53.0, 113.0));
+        }
+
+        itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(
+                this.getActivity(), overlayItemArray, null);
         map.getOverlays().add(itemizedIconOverlay);
 
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
         map.setMultiTouchControls(true);
-
-        CompassOverlay compassOverlay = new CompassOverlay(this.getContext(), map);
-        compassOverlay.enableCompass();
-        map.getOverlays().add(compassOverlay);
 
         return rootView;
     }
