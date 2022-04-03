@@ -5,21 +5,21 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_weight="6"
+    android:layout_weight="10"
     tools:context=".activities.Login.LoginWithQRFragment">
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textSize="30dp"
         android:text="Scan Login QR Code"
         android:layout_weight="1"/>
 
     <com.budiyev.android.codescanner.CodeScannerView
-        android:id="@+id/scannerview"
+        android:id="@+id/loginwithqr_scannerview"
         android:layout_width="wrap_content"
-        android:layout_height="612dp"
-        android:layout_weight="4"
+        android:layout_height="0dp"
+        android:layout_weight="8"
         app:autoFocusButtonColor="@android:color/white"
         app:autoFocusButtonVisible="true"
         app:flashButtonColor="@android:color/white"
@@ -36,7 +36,7 @@
     <Button
         android:id="@+id/loginwithqr_button_back"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textSize="30dp"
         android:text="Back"
         android:layout_weight="1"/>

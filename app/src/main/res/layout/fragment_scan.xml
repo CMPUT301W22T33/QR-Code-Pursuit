@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.budiyev.android.codescanner.CodeScannerView
-        android:id="@+id/scannerview"
+        android:id="@+id/scan_scannerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:autoFocusButtonColor="@android:color/white"

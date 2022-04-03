@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
@@ -43,8 +44,10 @@ public class LoginWithQRFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_loginwithqr, container, false);
         Activity activity = getActivity();
-        CodeScannerView scannerView = view.findViewById(R.id.scannerview);
+        CodeScannerView scannerView = view.findViewById(R.id.loginwithqr_scannerview);
+        backButton = view.findViewById(R.id.loginwithqr_button_back);
         auth = FirebaseAuth.getInstance();
+        navctrl = Navigation.findNavController(container);
         qrScanner = new CodeScanner(activity, scannerView);
 
         qrScanner.setDecodeCallback(new DecodeCallback() {
@@ -57,7 +60,7 @@ public class LoginWithQRFragment extends Fragment {
                                 if (task.isSuccessful()) {
                                     navctrl.navigate(R.id.action_loginFragment_to_mainActivity);
                                 } else {
-                                    Toast t = Toast.makeText(getActivity(), "Failed to login", Toast.LENGTH_SHORT);
+                                    Toast t = Toast.makeText(getActivity(), "Failed to login; tap to try again", Toast.LENGTH_LONG);
                                     t.show();
                                 }
                             }
@@ -65,6 +68,39 @@ public class LoginWithQRFragment extends Fragment {
             }
         });
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navctrl.popBackStack();
+            }
+        });
+
+        scannerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                qrScanner.startPreview();
+            }
+        });
+
         return view;
     }
+
+    /**
+     * restart qr scanner
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        qrScanner.startPreview();
+    }
+
+    /**
+     * clean up qr scanner (free the camera)
+     */
+    @Override
+    public void onPause() {
+        qrScanner.releaseResources();
+        super.onPause();
+    }
+
 }

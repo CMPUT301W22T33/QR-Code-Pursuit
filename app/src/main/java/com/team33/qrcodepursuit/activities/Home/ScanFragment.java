@@ -97,7 +97,7 @@ public class ScanFragment extends Fragment {
 
         Activity activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_scan, container, false);
-        CodeScannerView scannerView = view.findViewById(R.id.scannerview);
+        CodeScannerView scannerView = view.findViewById(R.id.scan_scannerview);
         qrScanner = new CodeScanner(activity, scannerView);
 
         qrScanner.setDecodeCallback(new DecodeCallback() {
