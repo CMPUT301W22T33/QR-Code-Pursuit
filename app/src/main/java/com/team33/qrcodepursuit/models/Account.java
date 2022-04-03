@@ -1,13 +1,21 @@
 package com.team33.qrcodepursuit.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class Account {
+public class Account implements Parcelable {
     // DB fields
     protected String username;
     protected String contactinfo;
@@ -97,12 +105,109 @@ public class Account {
         // todo : validate current uid
         return true;
     }
+
     /**
-     * get highest score...?
+     * get highest score out of scanned QRs
+     * @return highest score out of scanned QRs
      */
     @Exclude
     public int getHiScore() {
-        // todo : get high score
+        final int[] max = {0};
+        db.collection("GameQRs")
+            .whereIn(FieldPath.documentId(), this.ScannedQRs)
+            .orderBy("score", Query.Direction.DESCENDING).limit(1)
+            .get().addOnSuccessListener(result -> {
+                Integer res = result.getDocuments().get(0).get("score", Integer.class);
+                max[0] = (res != null) ? res : 0;
+            });
+        return max[0];
+    }
+
+    /**
+     * get total sum of scores of Scanned QRs
+     * @return sum of scanned scores
+     */
+    @Exclude
+    public int getTotalScore() {
+        final int[] sum = {0};
+        db.collection("GameQRs")
+            .whereIn(FieldPath.documentId(), this.ScannedQRs)
+            .get().addOnSuccessListener(result -> {
+                for (QueryDocumentSnapshot doc : result) {
+                    Number score = (Number) doc.get("score");
+                    sum[0] += (score != null) ? score.intValue() : 0;
+                }
+            });
+        return sum[0];
+    }
+
+    /**
+     * get total number of scanned QRcodes
+     * @return this.ScannedQRs.size()
+     */
+    @Exclude
+    public int getScannedQRsCount() {
+        return this.ScannedQRs.size();
+    }
+
+    /**
+     * get total number of owned QRcodes
+     * @return this.OwnedQRs.size()
+     */
+    public int getOwnedQRsCount() {
+        return this.OwnedQRs.size();
+    }
+
+    /**
+     * compares based on uid
+     * true if obj isinstanceof Account, and obj.uid == this.uid
+     */
+    @Exclude
+    @Override
+    public boolean equals(@Nullable Object obj)
+        { return obj instanceof Account && ((Account) obj).uid.equals(this.uid); }
+
+    // --- Parcelable implementation below --- //
+
+    @Exclude
+    @Override
+    public void writeToParcel(Parcel out, int i) {
+        out.writeString(username);
+        out.writeString(contactinfo);
+        out.writeString(bio);
+        out.writeStringList(ScannedQRs);
+        out.writeStringList(OwnedQRs);
+        out.writeString(uid);
+    }
+
+    protected Account(Parcel in) {
+        this();
+        username = in.readString();
+        contactinfo = in.readString();
+        bio = in.readString();
+        in.readStringList(ScannedQRs);
+        in.readStringList(OwnedQRs);
+        uid = in.readString();
+    }
+
+    @Exclude
+    public static final Parcelable.Creator<Account> CREATOR
+        = new Creator<Account>() {
+        @Override
+        public Account createFromParcel(Parcel parcel) {
+            return new Account(parcel);
+        }
+
+        @Override
+        public Account[] newArray(int i) {
+            return new Account[0];
+        }
+    };
+
+    @Exclude
+    @Override
+    public int describeContents() {
         return 0;
     }
+
 }
