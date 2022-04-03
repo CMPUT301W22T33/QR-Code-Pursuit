@@ -22,7 +22,6 @@ import java.util.ArrayList;
 public class GameQRCode implements Parcelable {
 
     private ArrayList<Integer> qrHash;
-    private ArrayList<String> comments;
     private String imageURL;
     private String owner;
     private Location location;
@@ -57,7 +56,6 @@ public class GameQRCode implements Parcelable {
         for (byte value : code.getRawBytes()) {
             qrHash.add((int) value);
         }
-        comments = new ArrayList<String>();
         location = null;
         imageURL = null;
         owner = null;
@@ -84,7 +82,6 @@ public class GameQRCode implements Parcelable {
      * @param in the parcel to unpack
      */
     protected GameQRCode(Parcel in) {
-        comments = in.createStringArrayList();
         imageURL = in.readString();
         owner = in.readString();
         location = in.readParcelable(Location.class.getClassLoader());
@@ -106,15 +103,10 @@ public class GameQRCode implements Parcelable {
 
     // getters
     public ArrayList<Integer> getQrHash() { return qrHash; }
-    public ArrayList<String> getComments() { return comments; }
     public String getImageURL() { return imageURL; }
     public Location getLocation() { return location; }
     public int getScore() { return score; }
     public String getOwner() { return owner; }
-
-    public void addComment(String comment) {
-        comments.add(comment);
-    }
 
     public void setLocation(Location loc) {
         location = loc;
@@ -138,7 +130,6 @@ public class GameQRCode implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeStringArray(comments.toArray(new String[0]));
         parcel.writeString(imageURL);
         parcel.writeString(owner);
         parcel.writeParcelable(location, 0);
