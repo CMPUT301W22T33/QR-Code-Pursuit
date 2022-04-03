@@ -63,6 +63,8 @@ public class RecieveQRFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseFirestore db;
 
+    private boolean imageAdded;
+
     private ActivityResultLauncher<String> requestPermissionLauncher
             = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
@@ -92,6 +94,7 @@ public class RecieveQRFragment extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
+        imageAdded = false;
         Activity activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
         Bundle b = getArguments();
@@ -163,6 +166,7 @@ public class RecieveQRFragment extends Fragment {
             if (qrImage.getDrawable() != null) {
                 addPhotoButton.setText("Retake photo");
             }
+            imageAdded = true;
         }
     }
 
@@ -202,28 +206,30 @@ public class RecieveQRFragment extends Fragment {
         qrcol.add(qr).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
-                String id = documentReference.getId();
+                if (imageAdded) {
+                    String id = documentReference.getId();
 
-                StorageReference ref = storage.child("qrImages/" + id + ".jpg");
-                Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                byte[] data = byteArrayOutputStream.toByteArray();
+                    StorageReference ref = storage.child("qrImages/" + id + ".jpg");
+                    Bitmap bitm = ((BitmapDrawable) qrImage.getDrawable()).getBitmap();
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                    byte[] data = byteArrayOutputStream.toByteArray();
 
-                UploadTask uploadTask = ref.putBytes(data);
+                    UploadTask uploadTask = ref.putBytes(data);
 
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String url = uri.toString();
-                                qrcol.document(id).update("imageURL", url);
-                            }
-                        });
-                    }
-                });
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String url = uri.toString();
+                                    qrcol.document(id).update("imageURL", url);
+                                }
+                            });
+                        }
+                    });
+                }
             }
         });
 
