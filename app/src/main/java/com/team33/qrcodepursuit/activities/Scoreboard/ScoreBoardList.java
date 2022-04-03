@@ -2,7 +2,6 @@ package com.team33.qrcodepursuit.activities.Scoreboard;
 
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.Account;
-import com.team33.qrcodepursuit.models.Player;
 
 import java.util.ArrayList;
 
@@ -35,9 +33,10 @@ public class ScoreBoardList extends ArrayAdapter<Account> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 //        return super.getView(position, convertView, parent);
         View view = convertView;
+        Context context = getContext();
 
         if(view == null){
-            view = LayoutInflater.from(getContext()).inflate(R.layout.scoreboard_element, parent,false);
+            view = LayoutInflater.from(context).inflate(R.layout.scoreboard_element, parent,false);
         }
 
 
@@ -46,8 +45,11 @@ public class ScoreBoardList extends ArrayAdapter<Account> {
 
        //these bottom 4 lines were in the lab, but idk if they are needed?
 
-        TextView username = view.findViewById(R.id.scoreboard_element_username);
-        TextView totalScore = view.findViewById(R.id.scoreboard_element_totalscore);
+        TextView ranking = view.findViewById(R.id.scoreboard_ranking);
+        TextView username = view.findViewById(R.id.scoreboard_username);
+        TextView totalScore = view.findViewById(R.id.scoreboard_totalscore);
+
+        ranking.setText(String.valueOf(position + 1));
         username.setText("Username: " + player.getUsername());
         totalScore.setText("Total Score: " + String.valueOf(player.getTotalScore()));
         //TextView playerRegion = view.findViewById(R.id.province_text);

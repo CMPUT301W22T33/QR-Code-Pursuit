@@ -13,9 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -80,9 +83,7 @@ public class ScoreBoardFragment extends Fragment {
         CollectionReference accounts = db.collection("Accounts");
 
         // Create a query against the collection.
-        Query query = accounts.whereNotEqualTo("username", "poo");
-
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        accounts.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -106,11 +107,21 @@ public class ScoreBoardFragment extends Fragment {
 
         playerList = rootView.findViewById(R.id.player_list);
         sortByButton = rootView.findViewById(R.id.sort_by_button);
-        regionButton = rootView.findViewById(R.id.region_button);
 
         // display the scoreboard
         playerAdapter = new ScoreBoardList(this.getActivity(), playerDataList);
         playerList.setAdapter(playerAdapter);
+
+        // display current user
+        Account currentAccount = new Account(FirebaseAuth.getInstance().getCurrentUser().getUid(), true);
+
+        TextView currentRanking = rootView.findViewById(R.id.current_ranking);
+        TextView currentUsername = rootView.findViewById(R.id.current_username);
+        TextView currentTotalScore = rootView.findViewById(R.id.current_totalscore);
+
+        currentRanking.setText(String.valueOf(playerDataList.size()));
+        currentUsername.setText("Me");
+        currentTotalScore.setText("Total Score: " + currentAccount.getTotalScore());
 
         return rootView;
     }

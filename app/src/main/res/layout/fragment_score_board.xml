@@ -23,11 +23,11 @@
 
     <ListView
         android:id="@+id/player_list"
-        android:layout_width="408dp"
-        android:layout_height="347dp"
+        android:layout_width="406dp"
+        android:layout_height="297dp"
         android:layout_marginTop="8dp"
-        android:textAlignment="center"
         android:gravity="center"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="373dp"
+        android:layout_width="192dp"
         android:layout_height="55dp"
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
@@ -50,7 +50,7 @@
             android:id="@+id/sort_by_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sort by: "
+            android:text="Sort by:  "
             tools:layout_conversion_absoluteHeight="34dp"
             tools:layout_conversion_absoluteWidth="53dp" />
 
@@ -63,27 +63,46 @@
             tools:layout_conversion_absoluteHeight="48dp"
             tools:layout_conversion_absoluteWidth="129dp" />
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="410dp"
+        android:layout_height="77dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_list">
 
         <TextView
-            android:id="@+id/region_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Region: "
-            android:textSize="14sp"
-            tools:layout_conversion_absoluteHeight="31dp"
-            tools:layout_conversion_absoluteWidth="48dp" />
+            android:id="@+id/current_ranking"
+            android:layout_width="398dp"
+            android:layout_height="77dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="TextView"
+            android:textAlignment="center" />
 
-        <Button
-            android:id="@+id/region_button"
-            android:layout_width="120dp"
-            android:layout_height="match_parent"
-            android:text="All"
-            tools:layout_conversion_absoluteHeight="39dp"
-            tools:layout_conversion_absoluteWidth="81dp" />
+        <TextView
+            android:id="@+id/current_username"
+            android:layout_width="398dp"
+            android:layout_height="77dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="TextView"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/current_totalscore"
+            android:layout_width="398dp"
+            android:layout_height="77dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="TextView"
+            android:textAlignment="center" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
