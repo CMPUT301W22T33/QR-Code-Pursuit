@@ -1,5 +1,10 @@
 package com.team33.qrcodepursuit.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
@@ -10,7 +15,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class Account {
+public class Account implements Parcelable {
     // DB fields
     protected String username;
     protected String contactinfo;
@@ -152,4 +157,57 @@ public class Account {
     public int getOwnedQRsCount() {
         return this.OwnedQRs.size();
     }
+
+    /**
+     * compares based on uid
+     * true if obj isinstanceof Account, and obj.uid == this.uid
+     */
+    @Exclude
+    @Override
+    public boolean equals(@Nullable Object obj)
+        { return obj instanceof Account && ((Account) obj).uid.equals(this.uid); }
+
+    // --- Parcelable implementation below --- //
+
+    @Exclude
+    @Override
+    public void writeToParcel(Parcel out, int i) {
+        out.writeString(username);
+        out.writeString(contactinfo);
+        out.writeString(bio);
+        out.writeStringList(ScannedQRs);
+        out.writeStringList(OwnedQRs);
+        out.writeString(uid);
+    }
+
+    protected Account(Parcel in) {
+        this();
+        username = in.readString();
+        contactinfo = in.readString();
+        bio = in.readString();
+        in.readStringList(ScannedQRs);
+        in.readStringList(OwnedQRs);
+        uid = in.readString();
+    }
+
+    @Exclude
+    public static final Parcelable.Creator<Account> CREATOR
+        = new Creator<Account>() {
+        @Override
+        public Account createFromParcel(Parcel parcel) {
+            return new Account(parcel);
+        }
+
+        @Override
+        public Account[] newArray(int i) {
+            return new Account[0];
+        }
+    };
+
+    @Exclude
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
 }
