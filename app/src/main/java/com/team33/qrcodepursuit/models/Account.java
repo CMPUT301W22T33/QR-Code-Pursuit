@@ -3,7 +3,10 @@ package com.team33.qrcodepursuit.models;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -97,12 +100,56 @@ public class Account {
         // todo : validate current uid
         return true;
     }
+
     /**
-     * get highest score...?
+     * get highest score out of scanned QRs
+     * @return highest score out of scanned QRs
      */
     @Exclude
     public int getHiScore() {
-        // todo : get high score
-        return 0;
+        final int[] max = {0};
+        db.collection("GameQRs")
+            .whereIn(FieldPath.documentId(), this.ScannedQRs)
+            .orderBy("score", Query.Direction.DESCENDING).limit(1)
+            .get().addOnSuccessListener(result -> {
+                Integer res = result.getDocuments().get(0).get("score", Integer.class);
+                max[0] = (res != null) ? res : 0;
+            });
+        return max[0];
+    }
+
+    /**
+     * get total sum of scores of Scanned QRs
+     * @return sum of scanned scores
+     */
+    @Exclude
+    public int getTotalScore() {
+        final int[] sum = {0};
+        db.collection("GameQRs")
+            .whereIn(FieldPath.documentId(), this.ScannedQRs)
+            .get().addOnSuccessListener(result -> {
+                for (QueryDocumentSnapshot doc : result) {
+                    Number score = (Number) doc.get("score");
+                    sum[0] += (score != null) ? score.intValue() : 0;
+                }
+            });
+        return sum[0];
+    }
+
+    /**
+     * get total number of scanned QRcodes
+     * @return this.ScannedQRs.size()
+     */
+    @Exclude
+    public int getScannedQRsCount() {
+        return this.ScannedQRs.size();
+    }
+
+    /**
+     * get total number of owned QRcodes
+     * @return this.OwnedQRs.size()
+     */
+    public int getOwnedQRsCount() {
+        return this.OwnedQRs.size();
     }
 }
