@@ -36,12 +36,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
-class ScoreBoardAccount {
-    public ScoreBoardAccount() {
-
-    }
-}
-
 public class ScoreBoardFragment extends Fragment {
 
     private final String TAG = "ScoreBoardFragment";
@@ -79,7 +73,7 @@ public class ScoreBoardFragment extends Fragment {
         // Access a Cloud Firestore instance from your Activity
         db = FirebaseFirestore.getInstance();
 
-        // Create a reference to the cities collection
+        // Create a reference to the accounts collection
         CollectionReference accounts = db.collection("Accounts");
 
         // Create a query against the collection.

@@ -1,9 +1,13 @@
 package com.team33.qrcodepursuit.activities.Map;
 
+import android.content.ClipData;
+import android.location.Location;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,17 +28,27 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
-
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.team33.qrcodepursuit.R;
+import com.team33.qrcodepursuit.models.Account;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,8 +56,13 @@ import com.team33.qrcodepursuit.R;
  * create an instance of this fragment.
  */
 public class MapFragment extends Fragment {
+    private final String TAG = "MapFragment";
 
     private MapView map = null;
+    FirebaseFirestore db;
+    CollectionReference qrs;
+    ArrayList<QueryDocumentSnapshot> nearbyScans;
+    ArrayList<OverlayItem> overlayItemArray;
 
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
 
@@ -66,69 +85,11 @@ public class MapFragment extends Fragment {
         Context context = this.getContext();
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
 
+        // Access a Cloud Firestore instance from your Activity
+        db = FirebaseFirestore.getInstance();
 
-
-        //these lines should make it follow the player, but i dont know how to make class for it (not important)
-        //https://stackoverflow.com/questions/53651627/how-to-add-my-current-location-with-osmdroid
-        //https://osmdroid.github.io/osmdroid/javadocs/osmdroid-android/debug/index.html?org/osmdroid/views/overlay/mylocation/MyLocationNewOverlay.html
-        //this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context),map);
-        //this.mLocationOverlay.enableMyLocation();
-        //map.getOverlays().add(this.mLocationOverlay);
-
-
-        /*
-        //https://www.tabnine.com/code/java/methods/org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay/getMyLocation
-        GeoPoint currentPoint = mMyLocationOverlay.getMyLocation(); //why dis error?
-        //https://osmdroid.github.io/osmdroid/javadocAll/org/osmdroid/util/GeoPoint.html
-        //1 latitude is about 111km
-        //1 longitude is about 111km
-        //set upper and lower bounds
-        double latUpper=currentPoint.getLatitude()+0.9; //currentlat+ 10km
-        double latLower=currentPoint.getLatitude()-0.9; //currentlat- 10km
-        double lonUpper=currentPoint.getLongitude()+0.9;//currentlon+10km
-        double lonLower=currentPoint.getLongitude()+0.9;//currentlon-10km
-
-
-
-
-        //another way of making array of map markers, but my way is easier if it works because this is fucky with images
-        //http://android-er.blogspot.com/2012/05/create-multi-marker-openstreetmap-for.html
-        //OverlayItemArray = new ArrayList<OverlayItem>(); //create array of markers
-        //for (int i=0; i<nearbyScans; i++){
-        //	OverlayItemArray.add(new OverlayItem("0, 0", "0, 0",  point));
-        //}
-
-
-        //get all the nearby scans
-        //https://firebase.google.com/docs/firestore/query-data/queries#java_1
-        //https://cloud.google.com/firestore/docs/samples/firestore-query-filter-range-valid
-        // Create a reference to the cities collection
-        CollectionReference QRs = db.collection("GameQRs");
-        // Create a query against the collection.
-        //https://developer.android.com/reference/android/location/Location
-        Query QRquery =QRs.where("location.getLatitude()<latUpper").where("getLatitude()>latLower").where("location.getLongitude()<lonUpper").where("location.getLongitude()>lonLower");
-
-        // retrieve  query results asynchronously using query.get()
-        ApiFuture<QuerySnapshot> querySnapshot = QRquery.get();
-
-        for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-            nearbyScans.add(document);
-        }
-
-
-
-        //for each nearby scan, add a marker (this does not do images yet!)
-        for (int i=0; i<(nearbyScans.size());i++) {
-            //GeoPoint point = new GeoPoint(45.845557, 26.170010);
-            GeoPoint point = new GeoPoint(nearbyScans.get(i).location.getLattitude, nearbyScans.get(i).location.getLongitude);//hope this works?
-            Marker QRMarker = new Marker(map);
-            QRMarker.setPosition(point);
-            QRMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-            map.getOverlays().add(QRMarker);
-        }
-        //map.getController().setCenter(point);
-    }
-    */
+        // Create a reference to the accounts collection
+        qrs = db.collection("GameQRs");
 
     }
 
@@ -136,21 +97,61 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_map, container, false);
-        // Inflate the layout for this fragment
-        map = rootView.findViewById(R.id.mapview);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.getController().setZoom(18.0);
 
         requestPermissionsIfNecessary(new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.INTERNET
         });
+
+        // Inflate the layout for this fragment
+        map = rootView.findViewById(R.id.mapview);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.getController().setZoom(3.0);
+
+        MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
+        mLocationOverlay.enableMyLocation();
+        GeoPoint myLocation = mLocationOverlay.getMyLocation();
+
+
+        if (myLocation != null) {
+            map.getOverlays().add(mLocationOverlay);
+            map.getController().animateTo(new GeoPoint(myLocation.getLatitude(), 50.0));
+        } else {
+            map.getController().animateTo(new GeoPoint(53.0, 113.0));
+        }
+
+        //--- Create Another Overlay for multi marker
+        overlayItemArray = new ArrayList<OverlayItem>();
+
+        // Create a query against the collection
+        qrs.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Location location = (Location)document.get("Location");
+                        if (location != null) {
+                            GeoPoint QRlocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                            overlayItemArray.add(new OverlayItem(document.getId(), "", QRlocation));
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "Error while querying for QRs");
+                }
+            }
+        });
+
+        ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(
+                this.getActivity(), overlayItemArray, null);
+
+        map.getOverlays().add(itemizedIconOverlay);
+
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
         map.setMultiTouchControls(true);
-
 
         CompassOverlay compassOverlay = new CompassOverlay(this.getContext(), map);
         compassOverlay.enableCompass();
         map.getOverlays().add(compassOverlay);
+
         return rootView;
     }
     @Override
