@@ -28,15 +28,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/qrscoreboard_textview_title" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ListView
         android:id="@+id/qrscoreboard_listview_qrs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/qrscoreboard_textview_sortmethod"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layout_constraintTop_toBottomOf="@+id/qrscoreboard_textview_sortmethod" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

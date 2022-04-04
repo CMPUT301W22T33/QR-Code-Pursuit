@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,7 +30,7 @@ import java.util.List;
 public class QRScoreBoardFragment extends Fragment {
 
     private TextView sortMethodView;
-    private RecyclerView qrListView;
+    private ListView qrListView;
 
     private FirebaseFirestore db;
     private FirebaseStorage storage;
@@ -62,33 +63,19 @@ public class QRScoreBoardFragment extends Fragment {
                     List<DocumentSnapshot> docs = task.getResult().getDocuments();
                     for (DocumentSnapshot doc : docs) {
                         qrIds.add(doc.getId());
+                        qrListAdapter.notifyDataSetChanged();
                     }
                 }
             }
         });
 
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        manager.setOrientation(LinearLayoutManager.VERTICAL);
-        qrListView.setLayoutManager(manager);
-
-        qrListAdapter.notifyDataSetChanged();
-
-        qrListView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+        qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Bundle args = new Bundle();
-                args.putString("SCOREBOARDTOVIEW", qrIds.get(qrListAdapter.clickedPos));
+                System.out.println(qrIds.get(i));
+                args.putString("SCOREBOARDTOVIEW", qrIds.get(i));
                 controller.navigate(R.id.action_QRScoreBoardFragment_to_viewQRFragment, args);
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
             }
         });
 

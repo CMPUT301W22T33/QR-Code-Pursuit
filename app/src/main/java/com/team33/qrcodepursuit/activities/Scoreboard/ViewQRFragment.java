@@ -72,26 +72,36 @@ public class ViewQRFragment extends Fragment {
         // get qr info
         Bundle b = getArguments();
         qrId = b.getString("SCOREBOARDTOVIEW"); // change this key later
-        db.collection("GameQRs").document(qrId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("GameQRs")
+                .document(qrId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     qrSnapshot = task.getResult();
+                    System.out.println(qrSnapshot);
+                } else {
+                    System.out.println("not found qr");
                 }
             }
         });
 
-        // set qr image
-        storage.getReferenceFromUrl((String) qrSnapshot.get("imageURL")).getBytes(1024*1024*10).addOnCompleteListener(new OnCompleteListener<byte[]>() {
-            @Override
-            public void onComplete(@NonNull Task<byte[]> task) {
-                if (task.isSuccessful()) {
-                    byte[] bytes = task.getResult();
-                    Bitmap bitm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    qrImage.setImageBitmap(bitm);
+        System.out.println(qrSnapshot.get("imageURL"));
+
+        if (qrSnapshot.get("imageURL") != null) {
+            // set qr image
+            storage.getReferenceFromUrl((String) qrSnapshot.get("imageURL")).getBytes(1024 * 1024 * 10).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                @Override
+                public void onComplete(@NonNull Task<byte[]> task) {
+                    if (task.isSuccessful()) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        qrImage.setImageBitmap(bitm);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // set score view
         scoreView.setText((String) qrSnapshot.get("score"));

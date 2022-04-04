@@ -3,11 +3,15 @@ package com.team33.qrcodepursuit.activities.Scoreboard;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,71 +28,45 @@ import com.team33.qrcodepursuit.models.Comment;
 
 import java.util.ArrayList;
 
-public class QRListAdapter extends RecyclerView.Adapter<QRListAdapter.ViewHolder> {
+
+public class QRListAdapter extends BaseAdapter {
 
     private ArrayList<String> localData;
-    public int clickedPos = -1;
 
-    /**
-     * weirdness for recyclerview
-     */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView image;
-
-        public ViewHolder(View view) {
-            super(view);
-            // Define click listener for the ViewHolder's View
-
-            image = view.findViewById(R.id.qr_image);
-        }
-
-        public ImageView getImageView() { return image; }
-    }
-
-    /**
-     * make adapter with data
-     * @param data to populate views with (image)
-     */
     public QRListAdapter(ArrayList<String> data) {
         localData = data;
     }
 
-    // make new comment view
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view, which defines the UI of the list item
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_qr, viewGroup, false);
-
-        return new ViewHolder(view);
+    public int getCount() {
+        return localData.size();
     }
 
-    // set view content
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        storage.getReferenceFromUrl(localData.get(position)).getBytes(1024*1024*10).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+    public Object getItem(int i) {
+        return localData.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_qr, viewGroup, false);
+        View finalView = view;
+        FirebaseStorage.getInstance().getReference("qrImages/"+localData.get(i)+".jpg").getBytes(1024*1024*10).addOnCompleteListener(new OnCompleteListener<byte[]>() {
             @Override
             public void onComplete(@NonNull Task<byte[]> task) {
                 if (task.isSuccessful()) {
                     byte[] bytes = task.getResult();
                     Bitmap bitm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    viewHolder.getImageView().setImageBitmap(bitm);
+                    ((ImageView) finalView.findViewById(R.id.qr_image)).setImageBitmap(bitm);
                 }
             }
         });
 
-        viewHolder.image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clickedPos = viewHolder.getAdapterPosition();
-            }
-        });
-
+        return view;
     }
-
-    @Override
-    public int getItemCount() {
-        return localData.size();
-    }
-
 }
