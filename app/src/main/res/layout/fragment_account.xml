@@ -112,38 +112,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/account_info">
 
-        <TableRow android:gravity="start|center_vertical|end">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical|end">
 
             <TextView
-                android:text="High Score"
+                android:text="Owned QR Codes"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black">
 
             </TextView>
 
             <TextView
-                android:id="@+id/account_gamestats_hiscore"
+                android:id="@+id/account_gamestats_ownedqrs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 pts"
-                android:textAlignment="viewEnd"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-        </TableRow>
-
-        <TableRow android:gravity="start|center_vertical|end">
-
-            <TextView
-                android:text="Total Score"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black">
-
-            </TextView>
-
-            <TextView
-                android:id="@+id/account_gamestats_totalscore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 pts"
+                android:text="0"
                 android:textAlignment="viewEnd"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
         </TableRow>
@@ -169,22 +154,124 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
         </TableRow>
 
-        <TableRow android:gravity="start|center_vertical|end">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="fill_vertical">
 
             <TextView
-                android:text="Owned QR Codes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:text="Ranking :"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/account_gamestats_scannedqr_ranking_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 0"
+                android:textAlignment="viewEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical|end">
+
+            <TextView
+                android:text="Low Score"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black">
 
             </TextView>
 
             <TextView
-                android:id="@+id/account_gamestats_ownedqrs"
+                android:id="@+id/account_gamestats_lowscore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:text="0 pts"
                 android:textAlignment="viewEnd"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+        </TableRow>
+
+        <TableRow android:gravity="start|center_vertical|end">
+
+            <TextView
+                android:text="High Score"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/black">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/account_gamestats_hiscore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 pts"
+                android:textAlignment="viewEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="fill_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:text="Ranking :"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/account_gamestats_hiscore_ranking_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 0"
+                android:textAlignment="viewEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </TableRow>
+
+        <TableRow android:gravity="start|center_vertical|end">
+
+            <TextView
+                android:text="Total Score"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/black">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/account_gamestats_totalscore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 pts"
+                android:textAlignment="viewEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="fill_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:text="Ranking :"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/account_gamestats_totalscore_ranking_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 0"
+                android:textAlignment="viewEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
         </TableRow>
 
     </TableLayout>
