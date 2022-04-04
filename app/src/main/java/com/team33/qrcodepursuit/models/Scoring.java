@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class Scoring {
     private final static String TAG = "Scoring";
     public enum SortBy { TOTALSCANS, HISCORE, TOTALSCORE }
+    private boolean needs_refresh = false;
 
     FirebaseFirestore db;
     CollectionReference accounts_db;
@@ -63,6 +64,7 @@ public class Scoring {
                 QueryDocumentSnapshot doc = change.getDocument();
                 String id = doc.getId();
                 Account acc = doc.toObject(Account.class);
+                needs_refresh = true;
                 switch (change.getType()) {
                     case ADDED: case MODIFIED: accounts.put(id, acc);
                     case REMOVED: accounts.remove(id);
@@ -76,6 +78,7 @@ public class Scoring {
                 QueryDocumentSnapshot doc = change.getDocument();
                 String id = doc.getId();
                 Integer score = doc.get("score", Integer.class);
+                needs_refresh = true;
                 switch (change.getType()) {
                     case ADDED: case MODIFIED: qrscores.put(id, score);
                     case REMOVED: qrscores.remove(id);
@@ -90,6 +93,7 @@ public class Scoring {
      * @param s sort by TOTALSCANS / HISCORE / TOTALSCORE
      */
     private void refreshscoreboard(SortBy s) {
+        if (!needs_refresh) return;
         Set<String> ids = accounts.keySet();
         switch (s) {
             case TOTALSCANS:
