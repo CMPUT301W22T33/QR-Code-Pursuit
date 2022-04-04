@@ -1,10 +1,15 @@
 package com.team33.qrcodepursuit.activities.Account;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -15,6 +20,10 @@ public class MyAccountFragment extends AccountFragment {
 
     public static final String TAG = "MyAccountFragment";
 
+    private Button loginQRButton;
+
+    private NavController navController;
+
     @Override
     protected boolean setAccount() {
         // check login and set account accordingly
@@ -22,6 +31,23 @@ public class MyAccountFragment extends AccountFragment {
         if (user == null) return false; // not logged in
         this.acc = new Account(user.getUid(), true);
         return true;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
+        loginQRButton = view.findViewById(R.id.account_button_loginqr);
+        navController = Navigation.findNavController(container);
+
+        loginQRButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.action_bottomnavigation_menu_account_to_generateLoginQRFragment);
+            }
+        });
+
+        return view;
     }
 
     @Override
