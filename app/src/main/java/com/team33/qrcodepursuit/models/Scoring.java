@@ -32,6 +32,7 @@ public class Scoring {
     CollectionReference accounts_db;
     CollectionReference gameqrs_db;
     HashMap<String, Account> accounts;
+    HashMap<String, Integer> qrscores;
     TreeSet<String> sortedbyscans
             = new TreeSet<>(Comparator.comparingInt(this::getTotalScore).reversed());
     TreeSet<String> sortedbyhiscore
@@ -41,7 +42,6 @@ public class Scoring {
             }).reversed());
     TreeSet<String> sortedbytotalscore
             = new TreeSet<>(Comparator.comparingInt(this::getTotalScore).reversed());
-    TreeMap<String, Integer> qrscores;
 
 
     private static final Scoring singleton = new Scoring();
@@ -49,9 +49,7 @@ public class Scoring {
     private Scoring() {
         db = FirebaseFirestore.getInstance();
         accounts = new HashMap<>();
-        qrscores = new TreeMap<>(
-                Comparator.comparingInt(id -> qrscores.get(id)));
-
+        qrscores = new HashMap<>();
         accounts_db = db.collection("Accounts");
         gameqrs_db = db.collection("GameQRs");
         accounts_db.get().addOnSuccessListener(result -> result.getDocuments().forEach(doc ->
@@ -177,7 +175,7 @@ public class Scoring {
             case TOTALSCORE:
                 rank = sortedbytotalscore.headSet(uid, true).size();
         }
-        return rank;
+        return rank + 1;
     }
 
     /**

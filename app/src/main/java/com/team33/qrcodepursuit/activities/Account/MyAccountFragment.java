@@ -20,7 +20,8 @@ public class MyAccountFragment extends AccountFragment {
         // check login and set account accordingly
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return false; // not logged in
-        this.acc = new Account(user.getUid(), true);
+        this.acc = new Account(user.getUid(), false);
+        this.acc.fromDB();
         return true;
     }
 

@@ -69,7 +69,7 @@ public abstract class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // link ui
-        pfp = view.findViewById(R.id.account_pfp_imgview);
+        // pfp = view.findViewById(R.id.account_pfp_imgview);
         username_text = view.findViewById(R.id.account_username_text);
         editpf_button = view.findViewById(R.id.account_editprofile_button);
         contactinfo_text = view.findViewById(R.id.account_info_contactinfo_content);
@@ -96,16 +96,16 @@ public abstract class AccountFragment extends Fragment {
         ownedCount_text.setText(format("%d", acc.getOwnedQRsCount()));
         scannedCount_text.setText(format("%d", acc.getScannedQRsCount()));
         scannedCountRank_text.setText(
-                format("%d // %d", sco.getRank(uid, Scoring.SortBy.TOTALSCANS), total));
+                format("%d / %d", sco.getRank(uid, Scoring.SortBy.TOTALSCANS), total));
         Map.Entry<String, Integer> lowScore = sco.getLowScoreQR(uid);
         lowscore_text.setText(format("%d", (lowScore != null) ? lowScore.getValue() : -1));
         Map.Entry<String, Integer> hiScore = sco.getHiScoreQR(uid);
         hiscore_text.setText(format("%d pts", (hiScore != null) ? hiScore.getValue() : -1));
         hiscoreRank_text.setText(
-                format("%d // %d", sco.getRank(uid, Scoring.SortBy.HISCORE), total));
+                format("%d / %d", sco.getRank(uid, Scoring.SortBy.HISCORE), total));
         totalscore_text.setText(format("%d pts", sco.getTotalScore(uid)));
         totalscoreRank_text.setText(
-                format("%d // %d", sco.getRank(uid, Scoring.SortBy.TOTALSCORE), total));
+                format("%d / %d", sco.getRank(uid, Scoring.SortBy.TOTALSCORE), total));
 
         // set listeners
         settings_button.setOnClickListener(this::settings_button_onclick);
