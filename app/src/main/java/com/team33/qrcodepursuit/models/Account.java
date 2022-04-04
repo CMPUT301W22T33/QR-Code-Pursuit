@@ -113,13 +113,15 @@ public class Account implements Parcelable {
     @Exclude
     public int getHiScore() {
         final int[] max = {0};
-        db.collection("GameQRs")
-            .whereIn(FieldPath.documentId(), this.ScannedQRs)
-            .orderBy("score", Query.Direction.DESCENDING).limit(1)
-            .get().addOnSuccessListener(result -> {
+        if (this.ScannedQRs.size() > 0) {
+            db.collection("GameQRs")
+                    .whereIn(FieldPath.documentId(), this.ScannedQRs)
+                    .orderBy("score", Query.Direction.DESCENDING).limit(1)
+                    .get().addOnSuccessListener(result -> {
                 Integer res = result.getDocuments().get(0).get("score", Integer.class);
                 max[0] = (res != null) ? res : 0;
             });
+        }
         return max[0];
     }
 
@@ -130,14 +132,16 @@ public class Account implements Parcelable {
     @Exclude
     public int getTotalScore() {
         final int[] sum = {0};
-        db.collection("GameQRs")
-            .whereIn(FieldPath.documentId(), this.ScannedQRs)
-            .get().addOnSuccessListener(result -> {
+        if (this.ScannedQRs.size() > 0) {
+            db.collection("GameQRs")
+                    .whereIn(FieldPath.documentId(), this.ScannedQRs)
+                    .get().addOnSuccessListener(result -> {
                 for (QueryDocumentSnapshot doc : result) {
                     Number score = (Number) doc.get("score");
                     sum[0] += (score != null) ? score.intValue() : 0;
                 }
             });
+        }
         return sum[0];
     }
 
