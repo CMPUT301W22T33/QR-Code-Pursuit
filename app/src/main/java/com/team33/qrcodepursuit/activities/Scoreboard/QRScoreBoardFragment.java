@@ -27,6 +27,9 @@ import com.team33.qrcodepursuit.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * display qr codes to user
+ */
 public class QRScoreBoardFragment extends Fragment {
 
     private TextView sortMethodView;
@@ -40,6 +43,13 @@ public class QRScoreBoardFragment extends Fragment {
         super(R.layout.fragment_qrscoreboard);
     }
 
+    /**
+     * on creation, fetch and display qrs
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_qrscoreboard, container, false);

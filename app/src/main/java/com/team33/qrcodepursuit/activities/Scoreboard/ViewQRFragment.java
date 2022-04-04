@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,9 +34,11 @@ import com.team33.qrcodepursuit.models.Comment;
 import com.team33.qrcodepursuit.models.GameQRCode;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * fragment to view qr code info that already exists
+ * for whatever reason, queries that work fine elsewhere break down here
  */
 public class ViewQRFragment extends Fragment {
 
@@ -53,6 +58,13 @@ public class ViewQRFragment extends Fragment {
 
     public ViewQRFragment() { super(R.layout.fragment_viewqr); }
 
+    /**
+     * on creation, display qr with appropriate information
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
@@ -72,22 +84,43 @@ public class ViewQRFragment extends Fragment {
         // get qr info
         Bundle b = getArguments();
         qrId = b.getString("SCOREBOARDTOVIEW"); // change this key later
-        db.collection("GameQRs")
-                .document(qrId)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
+        // for whatever reason db says it contains nothing
+//        DocumentReference docref = db.collection("GameQRs").document(qrId);
+//        docref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    qrSnapshot = task.getResult();
+//
+//                } else {
+//                    System.out.println("not found qr");
+//                }
+//            }
+//        });
+
+        CollectionReference check = db.collection("GameQRs");
+        System.out.println(check);
+
+        db.collection("GameQRs").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    qrSnapshot = task.getResult();
-                    System.out.println(qrSnapshot);
+                    System.out.println(task.getResult().getDocuments());
+                    List<DocumentSnapshot> docs = task.getResult().getDocuments();
+                    for (DocumentSnapshot doc : docs) {
+                        System.out.println(doc.getId());
+                        if (doc.getId() == qrId) {
+                            qrSnapshot = doc;
+                        }
+                    }
                 } else {
-                    System.out.println("not found qr");
+                    System.out.println(task.getException());
                 }
             }
         });
 
-        System.out.println(qrSnapshot.get("imageURL"));
+        System.out.println(qrSnapshot);
 
         if (qrSnapshot.get("imageURL") != null) {
             // set qr image

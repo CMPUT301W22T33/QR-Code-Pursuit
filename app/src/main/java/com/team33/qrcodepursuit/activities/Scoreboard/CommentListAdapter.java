@@ -15,6 +15,9 @@ import com.team33.qrcodepursuit.models.Comment;
 
 import java.util.ArrayList;
 
+/**
+ * adapt comments into a list
+ */
 public class CommentListAdapter  extends RecyclerView.Adapter<CommentListAdapter.ViewHolder> {
 
     private ArrayList<Comment> localData;
@@ -49,7 +52,12 @@ public class CommentListAdapter  extends RecyclerView.Adapter<CommentListAdapter
         localData = data;
     }
 
-    // make new comment view
+    /**
+     * create individual comment view
+     * @param viewGroup
+     * @param viewType
+     * @return
+     */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view, which defines the UI of the list item
@@ -58,7 +66,11 @@ public class CommentListAdapter  extends RecyclerView.Adapter<CommentListAdapter
         return new ViewHolder(view);
     }
 
-    // set view content
+    /**
+     * connect view to comment info
+     * @param viewHolder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getCommentView().setText(localData.get(position).getContent());

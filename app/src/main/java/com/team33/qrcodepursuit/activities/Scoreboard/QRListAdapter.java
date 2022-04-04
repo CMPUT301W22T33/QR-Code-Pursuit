@@ -28,20 +28,35 @@ import com.team33.qrcodepursuit.models.Comment;
 
 import java.util.ArrayList;
 
-
+/**
+ * adapt qr data into a ListView
+ */
 public class QRListAdapter extends BaseAdapter {
 
     private ArrayList<String> localData;
 
+    /**
+     * simply construct an adapter
+     * @param data to be displayed
+     */
     public QRListAdapter(ArrayList<String> data) {
         localData = data;
     }
 
+    /**
+     * get size of list
+     * @return
+     */
     @Override
     public int getCount() {
         return localData.size();
     }
 
+    /**
+     * get item of a certain index
+     * @param i index
+     * @return
+     */
     @Override
     public Object getItem(int i) {
         return localData.get(i);

@@ -38,6 +38,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
+/**
+ * fragment to display scoreboards
+ */
 public class ScoreBoardFragment extends Fragment {
 
     private final String TAG = "ScoreBoardFragment";
@@ -61,15 +64,13 @@ public class ScoreBoardFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ScoreBoardFragment newInstance() {
-        ScoreBoardFragment fragment = new ScoreBoardFragment();
-
-        return fragment;
-    }
+    // I MOVED A BUNCH OF STUFF INTO onCreateView
+    // was crashing when switching sometimes
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_score_board, container, false);
+
 
         playerDataList = new ArrayList<Account>();
 
@@ -98,11 +99,7 @@ public class ScoreBoardFragment extends Fragment {
                 }
             }
         });
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_score_board, container, false);
 
         controller = Navigation.findNavController(container);
 
