@@ -27,11 +27,13 @@ import java.util.stream.Collectors;
 public class Scoring {
     private final static String TAG = "Scoring";
     public enum SortBy { TOTALSCANS, HISCORE, TOTALSCORE }
+    private boolean needs_refresh = false;
 
     FirebaseFirestore db;
     CollectionReference accounts_db;
     CollectionReference gameqrs_db;
     HashMap<String, Account> accounts;
+    HashMap<String, Integer> qrscores;
     TreeSet<String> sortedbyscans
             = new TreeSet<>(Comparator.comparingInt(this::getTotalScore).reversed());
     TreeSet<String> sortedbyhiscore
@@ -41,7 +43,6 @@ public class Scoring {
             }).reversed());
     TreeSet<String> sortedbytotalscore
             = new TreeSet<>(Comparator.comparingInt(this::getTotalScore).reversed());
-    TreeMap<String, Integer> qrscores;
 
 
     private static final Scoring singleton = new Scoring();
@@ -49,9 +50,7 @@ public class Scoring {
     private Scoring() {
         db = FirebaseFirestore.getInstance();
         accounts = new HashMap<>();
-        qrscores = new TreeMap<>(
-                Comparator.comparingInt(id -> qrscores.get(id)));
-
+        qrscores = new HashMap<>();
         accounts_db = db.collection("Accounts");
         gameqrs_db = db.collection("GameQRs");
         accounts_db.get().addOnSuccessListener(result -> result.getDocuments().forEach(doc ->
@@ -65,6 +64,7 @@ public class Scoring {
                 QueryDocumentSnapshot doc = change.getDocument();
                 String id = doc.getId();
                 Account acc = doc.toObject(Account.class);
+                needs_refresh = true;
                 switch (change.getType()) {
                     case ADDED: case MODIFIED: accounts.put(id, acc);
                     case REMOVED: accounts.remove(id);
@@ -78,6 +78,7 @@ public class Scoring {
                 QueryDocumentSnapshot doc = change.getDocument();
                 String id = doc.getId();
                 Integer score = doc.get("score", Integer.class);
+                needs_refresh = true;
                 switch (change.getType()) {
                     case ADDED: case MODIFIED: qrscores.put(id, score);
                     case REMOVED: qrscores.remove(id);
@@ -92,6 +93,7 @@ public class Scoring {
      * @param s sort by TOTALSCANS / HISCORE / TOTALSCORE
      */
     private void refreshscoreboard(SortBy s) {
+        if (!needs_refresh) return;
         Set<String> ids = accounts.keySet();
         switch (s) {
             case TOTALSCANS:
@@ -177,7 +179,7 @@ public class Scoring {
             case TOTALSCORE:
                 rank = sortedbytotalscore.headSet(uid, true).size();
         }
-        return rank;
+        return rank + 1;
     }
 
     /**

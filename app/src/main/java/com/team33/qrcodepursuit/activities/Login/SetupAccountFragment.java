@@ -1,7 +1,5 @@
 package com.team33.qrcodepursuit.activities.Login;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +31,9 @@ import com.team33.qrcodepursuit.models.Account;
  * after signing up with FirebaseAuth in SignUpFragment
  */
 public class SetupAccountFragment extends Fragment {
+
+    private final String TAG = "SetupAccountFragment";
+
     FirebaseAuth mAuth;
     FirebaseUser mUser;
     String uid;
@@ -91,14 +92,13 @@ public class SetupAccountFragment extends Fragment {
         // create new Account and add to DB
         done_button.setOnClickListener(v -> {
             Account acc = new Account();
-            acc.setUsername(username_field.toString());
-            acc.setBio(bio_field.toString());
-            acc.setContactinfo(contactinfo_field.toString());
+            acc.setUid(uid);
+            acc.setUsername(username_field.getText().toString());
+            acc.setBio(bio_field.getText().toString());
+            acc.setContactinfo(contactinfo_field.getText().toString());
 
             // add Account to DB
-            db.document(uid)
-                .set(acc)
-                .addOnCompleteListener(task -> {
+            acc.toDB().addOnCompleteListener(task -> {
                     if (task.isSuccessful()){
                         Log.d(TAG, "created new Account");
                         navctrl.navigate(R.id.action_setupAccountFragment_to_mainActivity);
