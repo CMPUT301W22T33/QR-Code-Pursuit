@@ -44,11 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+// Fragment which represents the map screen
 public class MapFragment extends Fragment {
     private final String TAG = "MapFragment";
 
@@ -65,27 +61,14 @@ public class MapFragment extends Fragment {
         // Required empty public constructor
     }
 
-
-    // TODO: Rename and change types and number of parameters
-    public static MapFragment newInstance(String param1, String param2) {
+    public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
         return fragment;
-    }
-
-    public static Drawable LoadImageFromWebOperations(String url) {
-        try {
-            InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            return d;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
 
         Context context = this.getContext();
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
@@ -93,10 +76,9 @@ public class MapFragment extends Fragment {
         // Access a Cloud Firestore instance from your Activity
         db = FirebaseFirestore.getInstance();
 
-        // Create a reference to the accounts collection
+        // Create a reference to the qrs collection
         qrs = db.collection("GameQRs");
 
-        //--- Create Another Overlay for multi marker
         overlayItemArray = new ArrayList<OverlayItem>();
 
         qrs.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -113,12 +95,10 @@ public class MapFragment extends Fragment {
                                     String imageURL = (String)document.get("imageURL");
                                     Drawable image = null;
                                     if (imageURL != null) {
-                                        //image = LoadImageFromWebOperations(imageURL);
 
                                         try {
                                             Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL(imageURL).getContent());
                                             image = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 150, 150, false));
-                                            //image = new ScaleDrawable(qrImage, 11, 0.5f, 0.5f);
                                         } catch (MalformedURLException e) {
                                             e.printStackTrace();
                                         } catch (IOException e) {
@@ -165,9 +145,7 @@ public class MapFragment extends Fragment {
 
         // Inflate the layout for this fragment
         map = rootView.findViewById(R.id.mapview);
-        //map.setTileSource(TileSourceFactory.MAPNIK);
         map.getController().setZoom(10.0);
-        //map.setMaxZoomLevel(7.0);
         map.setMinZoomLevel(4.0);
 
         MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
