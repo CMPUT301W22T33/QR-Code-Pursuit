@@ -21,10 +21,30 @@
         android:id="@+id/bottomnavigation_menu_scoreboard"
         android:name="com.team33.qrcodepursuit.activities.Scoreboard.ScoreBoardFragment"
         android:label="fragment_score_board"
-        tools:layout="@layout/fragment_score_board" />
+        tools:layout="@layout/fragment_score_board" >
+        <action
+            android:id="@+id/action_bottomnavigation_menu_scoreboard_to_QRScoreBoardFragment"
+            app:destination="@id/QRScoreBoardFragment" />
+    </fragment>
     <fragment
         android:id="@+id/bottomnavigation_menu_map"
         android:name="com.team33.qrcodepursuit.activities.Map.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_bottomnavigation_menu_map_to_QRScoreBoardFragment"
+            app:destination="@id/QRScoreBoardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/QRScoreBoardFragment"
+        android:name="com.team33.qrcodepursuit.activities.Scoreboard.QRScoreBoardFragment"
+        android:label="QRScoreBoardFragment" >
+        <action
+            android:id="@+id/action_QRScoreBoardFragment_to_viewQRFragment"
+            app:destination="@id/viewQRFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewQRFragment"
+        android:name="com.team33.qrcodepursuit.activities.Scoreboard.ViewQRFragment"
+        android:label="ViewQRFragment" />
 </navigation>

@@ -48,19 +48,9 @@ import androidx.navigation.Navigation;
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.Result;
 import com.team33.qrcodepursuit.R;
-import com.team33.qrcodepursuit.activities.Home.RecieveQRFragment;
 import com.team33.qrcodepursuit.models.GameQRCode;
-
-import java.util.ArrayList;
 
 /**
  * first fragment, automatically scans for QR code
@@ -107,7 +97,7 @@ public class ScanFragment extends Fragment {
 
         Activity activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_scan, container, false);
-        CodeScannerView scannerView = view.findViewById(R.id.scannerview);
+        CodeScannerView scannerView = view.findViewById(R.id.scan_scannerview);
         qrScanner = new CodeScanner(activity, scannerView);
 
         qrScanner.setDecodeCallback(new DecodeCallback() {

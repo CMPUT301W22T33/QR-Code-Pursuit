@@ -28,13 +28,11 @@ import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,12 +45,6 @@ import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.GameQRCode;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * handle adding identifying photo and location to GameQRCode
@@ -70,6 +62,8 @@ public class RecieveQRFragment extends Fragment {
     private NavController navController;
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseFirestore db;
+
+    private boolean imageAdded;
 
     private ActivityResultLauncher<String> requestPermissionLauncher
             = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -100,6 +94,7 @@ public class RecieveQRFragment extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
+        imageAdded = false;
         Activity activity = getActivity();
         View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
         Bundle b = getArguments();
@@ -171,6 +166,7 @@ public class RecieveQRFragment extends Fragment {
             if (qrImage.getDrawable() != null) {
                 addPhotoButton.setText("Retake photo");
             }
+            imageAdded = true;
         }
     }
 
@@ -186,7 +182,7 @@ public class RecieveQRFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot doc : task.getResult()) {
-                                // todo: set user as another owner of the scanned qr
+                                // todo: set user as another scanner of the scanned qr
                                 // also let user know that their location and photo just got tossed lol
                                 addNewQR[0] = false;
                             }
@@ -210,28 +206,30 @@ public class RecieveQRFragment extends Fragment {
         qrcol.add(qr).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
-                String id = documentReference.getId();
+                if (imageAdded) {
+                    String id = documentReference.getId();
 
-                StorageReference ref = storage.child("qrImages/" + id + ".jpg");
-                Bitmap bitm = ( (BitmapDrawable) qrImage.getDrawable()).getBitmap();
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                byte[] data = byteArrayOutputStream.toByteArray();
+                    StorageReference ref = storage.child("qrImages/" + id + ".jpg");
+                    Bitmap bitm = ((BitmapDrawable) qrImage.getDrawable()).getBitmap();
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                    byte[] data = byteArrayOutputStream.toByteArray();
 
-                UploadTask uploadTask = ref.putBytes(data);
+                    UploadTask uploadTask = ref.putBytes(data);
 
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String url = uri.toString();
-                                qrcol.document(id).update("imageURL", url);
-                            }
-                        });
-                    }
-                });
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String url = uri.toString();
+                                    qrcol.document(id).update("imageURL", url);
+                                }
+                            });
+                        }
+                    });
+                }
             }
         });
 

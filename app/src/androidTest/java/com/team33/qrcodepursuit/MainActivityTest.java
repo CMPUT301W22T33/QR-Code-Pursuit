@@ -30,14 +30,20 @@ public class MainActivityTest {
 
     @Test
     public void startsOnScan() {
-        onView(withId(R.id.scannerview)).check(matches(isDisplayed()));
+        onView(withId(R.id.scan_scannerview)).check(matches(isDisplayed()));
     }
 
     @Test
     public void changeFrag() {
         // in the future, change this to other fragments
         onView(withId(R.id.bottomnavigation_menu_home)).perform(click());
-        onView(withId(R.id.container)).check(matches(isDisplayed()));
+        onView(withId(R.id.main_container_host)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.bottomnavigation_menu_map)).perform(click());
+        onView(withId(R.id.main_container_host)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.bottomnavigation_menu_scoreboard)).perform(click());
+        onView(withId(R.id.main_container_host)).check(matches(isDisplayed()));
     }
 
 }
