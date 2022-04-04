@@ -3,6 +3,11 @@ package com.team33.qrcodepursuit.activities.Map;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -32,6 +37,10 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -63,6 +72,16 @@ public class MapFragment extends Fragment {
         return fragment;
     }
 
+    public static Drawable LoadImageFromWebOperations(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            Drawable d = Drawable.createFromStream(is, "src name");
+            return d;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,13 +104,47 @@ public class MapFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        Map<String, Object> location = (Map<String, Object>)document.get("location");
-                        if (location != null) {
-                            GeoPoint QRlocation = new GeoPoint((double)location.get("latitude"), (double)location.get("longitude"));
-                            itemizedIconOverlay.addItem(new OverlayItem(document.getId(), "", QRlocation));
-                        }
+                        Thread thread = new Thread(new Runnable() {
 
-                        map.invalidate();
+                            @Override
+                            public void run() {
+                                try  {
+                                    Map<String, Object> location = (Map<String, Object>)document.get("location");
+                                    String imageURL = (String)document.get("imageURL");
+                                    Drawable image = null;
+                                    if (imageURL != null) {
+                                        //image = LoadImageFromWebOperations(imageURL);
+
+                                        try {
+                                            Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL(imageURL).getContent());
+                                            image = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 150, 150, false));
+                                            //image = new ScaleDrawable(qrImage, 11, 0.5f, 0.5f);
+                                        } catch (MalformedURLException e) {
+                                            e.printStackTrace();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    if (location != null) {
+                                        GeoPoint QRlocation = new GeoPoint((double)location.get("latitude"), (double)location.get("longitude"));
+                                        OverlayItem newOverlay = new OverlayItem(document.getId(), "", QRlocation);
+                                        if (image != null)
+                                            newOverlay.setMarker(image);
+
+                                        itemizedIconOverlay.addItem(newOverlay);
+                                    }
+
+                                    map.invalidate();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                        thread.start();
+
+
                     }
                 } else {
                     Log.e(TAG, "Error while querying for QRs");
@@ -114,6 +167,8 @@ public class MapFragment extends Fragment {
         map = rootView.findViewById(R.id.mapview);
         //map.setTileSource(TileSourceFactory.MAPNIK);
         map.getController().setZoom(10.0);
+        //map.setMaxZoomLevel(7.0);
+        map.setMinZoomLevel(4.0);
 
         MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
         mLocationOverlay.enableMyLocation();
