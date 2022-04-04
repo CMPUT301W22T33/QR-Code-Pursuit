@@ -180,6 +180,7 @@ public class Account implements Parcelable {
      * get total number of owned QRcodes
      * @return this.OwnedQRs.size()
      */
+    @Exclude
     public int getOwnedQRsCount() {
         return this.OwnedQRs.size();
     }
