@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         user = auth.getCurrentUser();
         // if not logged in, goto LoginActivity
         if (user == null)
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
 
         // switch between fragments with bottom navigation menu
         // add frags in nav_main.xml

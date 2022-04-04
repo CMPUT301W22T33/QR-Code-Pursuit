@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.zxing.BarcodeFormat;
@@ -38,9 +39,10 @@ public class GenerateLoginQRFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_recieveqr, container, false);
+        View view = inflater.inflate(R.layout.fragment_generateloginqr, container, false);
         qrImage = view.findViewById(R.id.generateloginqr_imageview_qr);
         auth = FirebaseAuth.getInstance();
+        FirebaseApp app = FirebaseApp.initializeApp(getContext());
         auth.getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
