@@ -81,6 +81,7 @@ public class QRListAdapter extends BaseAdapter {
                 }
             }
         });
+        ((TextView) (view.findViewById(R.id.qr_id))).setText(localData.get(i));
 
         return view;
     }
