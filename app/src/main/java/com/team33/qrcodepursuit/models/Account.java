@@ -2,6 +2,7 @@ package com.team33.qrcodepursuit.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -16,6 +17,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
 public class Account implements Parcelable {
+    private static final String TAG = "Account";
+    private static final String UID_UNSET = "unset";
+
     // DB fields
     protected String username;
     protected String contactinfo;
@@ -33,6 +37,8 @@ public class Account implements Parcelable {
      * OwnedQRs, ScannedQRs = []
      */
     public Account() {
+        uid = UID_UNSET;
+        db = FirebaseFirestore.getInstance();
         username = "";
         contactinfo = "";
         bio = "";
@@ -48,8 +54,7 @@ public class Account implements Parcelable {
      */
     public Account(String uid, boolean sync_now) {
         this();
-        db = FirebaseFirestore.getInstance();
-        dbAccount = db.collection("/Accounts").document(uid);
+        this.setUid(uid);
         if (sync_now) fromDB();
     }
 
@@ -68,7 +73,7 @@ public class Account implements Parcelable {
 
     /**
      * sync DB to local
-     * @return task set(super AccountPOJO)
+     * @return task document.set(Account)
      */
     @Exclude
     public Task<Void> toDB() {
@@ -76,11 +81,30 @@ public class Account implements Parcelable {
     }
     /**
      * sync local to DB
+     * MUST ONLY BE CALLED AFTER SETTING UID
      */
     @Exclude
     public void fromDB() {
-        // todo
-        // this = (Account) dbAccount.get().getResult().toObject(AccountPOJO.class);
+        if (uid.equals(UID_UNSET)) {
+            Log.w(TAG, "uid not provided, not synced from DB");
+            return;
+        }
+        dbAccount.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Account from = task.getResult().toObject(Account.class);
+                if (from == null) return;
+                // i feel like there should be a less stupid way to do this but whatever
+                // this = from;
+                this.setUsername(from.username);
+                this.setBio(from.bio);
+                this.setContactinfo(from.contactinfo);
+                this.setOwnedQRs(from.OwnedQRs);
+                this.setScannedQRs(from.ScannedQRs);
+            } else {
+                Exception e = task.getException();
+                Log.w(TAG, "failed to get Account from DB", e);
+            }
+        });
     }
 
     /**
@@ -94,18 +118,15 @@ public class Account implements Parcelable {
      * @param uid uid of FirebaseAuth user
      */
     @Exclude
-    public void setUid(String uid) { this.uid = uid; }
-
-    /**
-     * validate current uid
-     * @return true if current uid is valid FirebaseAuth
-     */
-    @Exclude
-    public boolean isValid() {
-        // todo : validate current uid
-        return true;
+    public void setUid(String uid) {
+        if (!this.uid.equals(UID_UNSET)) {
+            Log.d(TAG, "set uid");
+        }
+        this.uid = uid;
+        dbAccount = db.collection("Accounts").document(uid);
     }
 
+    // WARNING: THIS WILL BE DEPRECATED IN FAVOR OF Scoring.getHiScore(uid)
     /**
      * get highest score out of scanned QRs
      * @return highest score out of scanned QRs
@@ -125,6 +146,7 @@ public class Account implements Parcelable {
         return max[0];
     }
 
+    // WARNING: THIS WILL BE DEPRECATED IN FAVOR OF Scoring.getTotalScore(uid)
     /**
      * get total sum of scores of Scanned QRs
      * @return sum of scanned scores
@@ -192,6 +214,7 @@ public class Account implements Parcelable {
         in.readStringList(ScannedQRs);
         in.readStringList(OwnedQRs);
         uid = in.readString();
+        this.setUid(uid);
     }
 
     @Exclude
