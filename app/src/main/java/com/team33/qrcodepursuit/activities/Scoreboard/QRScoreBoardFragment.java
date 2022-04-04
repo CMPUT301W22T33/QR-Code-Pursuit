@@ -72,8 +72,10 @@ public class QRScoreBoardFragment extends Fragment {
                 if (task.isSuccessful()) {
                     List<DocumentSnapshot> docs = task.getResult().getDocuments();
                     for (DocumentSnapshot doc : docs) {
-                        qrIds.add(doc.getId());
-                        qrListAdapter.notifyDataSetChanged();
+                        if (!qrIds.contains(doc.getId())) {
+                            qrIds.add(doc.getId());
+                            qrListAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }
