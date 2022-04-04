@@ -16,7 +16,8 @@
     <fragment
         android:id="@+id/recieveQRFragment"
         android:name="com.team33.qrcodepursuit.activities.Home.RecieveQRFragment"
-        android:label="RecieveQRFragment" />
+        android:label="RecieveQRFragment"
+        tools:layout="@layout/fragment_recieveqr"/>
     <fragment
         android:id="@+id/bottomnavigation_menu_scoreboard"
         android:name="com.team33.qrcodepursuit.activities.Scoreboard.ScoreBoardFragment"
@@ -25,6 +26,9 @@
         <action
             android:id="@+id/action_bottomnavigation_menu_scoreboard_to_QRScoreBoardFragment"
             app:destination="@id/QRScoreBoardFragment" />
+        <action
+            android:id="@+id/action_bottomnavigation_menu_scoreboard_to_OtherAccountFragment"
+            app:destination="@id/OtherAccountFragment" />
     </fragment>
     <fragment
         android:id="@+id/bottomnavigation_menu_map"
@@ -46,5 +50,22 @@
     <fragment
         android:id="@+id/viewQRFragment"
         android:name="com.team33.qrcodepursuit.activities.Scoreboard.ViewQRFragment"
-        android:label="ViewQRFragment" />
-</navigation>
+        android:label="ViewQRFragment"
+        tools:layout="@layout/fragment_viewqr">
+        <action
+            android:id="@+id/action_viewQRFragment_to_OtherAccountFragment"
+            app:destination="@id/OtherAccountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/bottomnavigation_menu_account"
+        android:name="com.team33.qrcodepursuit.activities.Account.MyAccountFragment"
+        android:label="MyAccount Tab"
+        tools:layout="@layout/fragment_account">
+    </fragment>
+    <fragment
+        android:id="@+id/OtherAccountFragment"
+        android:name="com.team33.qrcodepursuit.activities.Account.OtherAccountFragment"
+        android:label="Other Acount"
+        tools:layout="@layout/fragment_account">
+    </fragment>
+    </navigation>
