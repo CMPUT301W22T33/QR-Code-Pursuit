@@ -71,7 +71,7 @@ public class ViewQRFragment extends Fragment {
         // bundle should contain QR id in firebase
         // get qr info
         Bundle b = getArguments();
-        qrId = b.getString("PLACEHOLDERKEY"); // change this key later
+        qrId = b.getString("SCOREBOARDTOVIEW"); // change this key later
         db.collection("GameQRs").document(qrId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

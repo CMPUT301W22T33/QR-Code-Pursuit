@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,12 +45,15 @@ public class ScoreBoardFragment extends Fragment {
     // Declare the variables so that you will be able to reference it later.
     Button sortByButton;
     Button regionButton;
+    Button goToQRButton;
     ListView playerList;
 
     FirebaseFirestore db;
 
     ArrayAdapter<Account> playerAdapter;
     ArrayList<Account> playerDataList;
+
+    NavController controller;
 
     //ScoreBoardList scoreBoardList;
 
@@ -99,8 +104,18 @@ public class ScoreBoardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_score_board, container, false);
 
+        controller = Navigation.findNavController(container);
+
         playerList = rootView.findViewById(R.id.player_list);
         sortByButton = rootView.findViewById(R.id.sort_by_button);
+        goToQRButton = rootView.findViewById(R.id.score_board_button_toqr);
+
+        goToQRButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.action_bottomnavigation_menu_scoreboard_to_QRScoreBoardFragment);
+            }
+        });
 
         // display the scoreboard
         playerAdapter = new ScoreBoardList(this.getActivity(), playerDataList);
