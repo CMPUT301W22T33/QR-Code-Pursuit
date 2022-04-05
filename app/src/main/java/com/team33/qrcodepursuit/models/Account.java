@@ -15,6 +15,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 
 public class Account implements Parcelable {
     private static final String TAG = "Account";
@@ -89,22 +91,29 @@ public class Account implements Parcelable {
             Log.w(TAG, "uid not provided, not synced from DB");
             return;
         }
-        dbAccount.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Account from = task.getResult().toObject(Account.class);
-                if (from == null) return;
-                // i feel like there should be a less stupid way to do this but whatever
-                // this = from;
-                this.setUsername(from.username);
-                this.setBio(from.bio);
-                this.setContactinfo(from.contactinfo);
-                this.setOwnedQRs(from.OwnedQRs);
-                this.setScannedQRs(from.ScannedQRs);
-            } else {
-                Exception e = task.getException();
-                Log.w(TAG, "failed to get Account from DB", e);
-            }
+        CountDownLatch done = new CountDownLatch(1);
+        dbAccount.get().addOnCompleteListener(
+            Executors.newSingleThreadExecutor(),
+            task -> {
+                if (task.isSuccessful()) {
+                    Account from = task.getResult().toObject(Account.class);
+                    if (from == null) return;
+                    // i feel like there should be a less stupid way to do this but whatever
+                    // this = from;
+                    this.setUsername(from.username);
+                    this.setBio(from.bio);
+                    this.setContactinfo(from.contactinfo);
+                    this.setOwnedQRs(from.OwnedQRs);
+                    this.setScannedQRs(from.ScannedQRs);
+                    Log.d(TAG, "retrieved Account from DB");
+                } else {
+                    Exception e = task.getException();
+                    Log.w(TAG, "failed to get Account from DB", e);
+                }
+                done.countDown();
         });
+        try { done.await(); }
+        catch (InterruptedException ignored) { }
     }
 
     /**
