@@ -102,7 +102,7 @@ public class ViewQRFragment extends Fragment {
         CollectionReference check = db.collection("GameQRs");
         System.out.println(check);
 
-        db.collection("GameQRs").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        check.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {

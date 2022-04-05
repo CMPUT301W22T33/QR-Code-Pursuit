@@ -68,7 +68,10 @@ public class LoginFragment extends Fragment{
                         if (task.isSuccessful()) {
                             // switch to MainActivity
                             Log.d(TAG, "signInWithEmail:success");
-                            navctrl.navigate(R.id.action_loginFragment_to_mainActivity);
+                            //navctrl.navigate(R.id.action_loginFragment_to_mainActivity);
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            startActivity(intent);
+                            getActivity().finish();
                         }
                         else {
                             Exception e = task.getException();

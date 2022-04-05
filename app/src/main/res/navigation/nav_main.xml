@@ -61,6 +61,9 @@
         android:name="com.team33.qrcodepursuit.activities.Account.MyAccountFragment"
         android:label="MyAccount Tab"
         tools:layout="@layout/fragment_account">
+        <action
+            android:id="@+id/action_bottomnavigation_menu_account_to_generateLoginQRFragment"
+            app:destination="@id/generateLoginQRFragment" />
     </fragment>
     <fragment
         android:id="@+id/OtherAccountFragment"
@@ -68,4 +71,8 @@
         android:label="Other Acount"
         tools:layout="@layout/fragment_account">
     </fragment>
-    </navigation>
+    <fragment
+        android:id="@+id/generateLoginQRFragment"
+        android:name="com.team33.qrcodepursuit.activities.Account.GenerateLoginQRFragment"
+        android:label="GenerateLoginQRFragment" />
+</navigation>

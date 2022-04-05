@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.team33.qrcodepursuit.R;
 import com.team33.qrcodepursuit.models.Comment;
 
@@ -71,13 +72,18 @@ public class QRListAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_qr, viewGroup, false);
         View finalView = view;
-        FirebaseStorage.getInstance().getReference("qrImages/"+localData.get(i)+".jpg").getBytes(1024*1024*10).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+        System.out.println(localData.get(i));
+        System.out.println(i);
+        StorageReference qrref = FirebaseStorage.getInstance().getReference("qrImages/"+localData.get(i)+".jpg");
+        qrref.getBytes(1024*1024*10).addOnCompleteListener(new OnCompleteListener<byte[]>() {
             @Override
             public void onComplete(@NonNull Task<byte[]> task) {
                 if (task.isSuccessful()) {
-                    byte[] bytes = task.getResult();
-                    Bitmap bitm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    ((ImageView) finalView.findViewById(R.id.qr_image)).setImageBitmap(bitm);
+                    if (task.getResult().length >= 0) {
+                        byte[] bytes = task.getResult();
+                        Bitmap bitm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        ((ImageView) finalView.findViewById(R.id.qr_image)).setImageBitmap(bitm);
+                    }
                 }
             }
         });
